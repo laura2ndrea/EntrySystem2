@@ -48,7 +48,6 @@ public class PeopleController {
 
     @GetMapping("/{peopleId}/equipment")
     public ResponseEntity<List<RegisteredEquipment>> findEquipmentByPeopleId(@PathVariable Long peopleId) {
-
         List<RegisteredEquipment> equipmentList = peopleService.findEquipmentByPeopleId(peopleId);
         return ResponseEntity.ok(equipmentList);
 
@@ -62,25 +61,47 @@ public class PeopleController {
 
     @GetMapping("/{id}")
     public ResponseEntity<People> getPeopleById(@PathVariable Long id) {
-        
-            People people = peopleService.getPeopleById(id);
-            return ResponseEntity.ok(people);
-       
+
+        People people = peopleService.getPeopleById(id);
+        return ResponseEntity.ok(people);
+
     }
 
     @GetMapping("/cedula/{cedula}")
     public ResponseEntity<People> getPeopleByCedula(@PathVariable String cedula) {
-        
-            People people = peopleService.getPeopleByCedula(cedula);
-            return ResponseEntity.ok(people);
-        
+        People people = peopleService.getPeopleByCedula(cedula);
+        return ResponseEntity.ok(people);
+
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{cedula}")
     public ResponseEntity<Void> deletePeople(@PathVariable String cedula) {
-       
-            peopleService.deletePeople(cedula);
-            return ResponseEntity.ok().build();
-        } 
+        peopleService.deletePeople(cedula);
+        return ResponseEntity.ok().build();
+    }
     
+    
+    // CUERPO PARA UPDATE 
+    
+    //	{
+//		"id": 24,
+//		"name": "BBBB",
+//		"cedula": "1111111111",
+//		"telefono": "2222222",
+//		"personType": true
+//	} 
+
+    @PutMapping
+    public ResponseEntity<People> updatePeople(@RequestBody People people) {
+        People peopleToUpdate = peopleService.getPeopleById(people.getId());
+        if (peopleToUpdate == null) {
+            return ResponseEntity.notFound().build();
+        }
+        peopleToUpdate.setName(people.getName());
+        peopleToUpdate.setCedula(people.getCedula());
+        peopleToUpdate.setPersonType(people.getPersonType());
+        peopleToUpdate.setTelefono(people.getTelefono());
+        return ResponseEntity.ok(peopleToUpdate);
+    }
+
 }
