@@ -4,6 +4,9 @@ import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.vehicle.application.VehicleRepository;
 import campus.u2.entrysystem.vehicle.domain.Vehicle;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.people.application.PeopleRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
+    private final PeopleRepository peopleRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
-    public VehicleService(VehicleRepository vehicleRepository) {
+    public VehicleService(VehicleRepository vehicleRepository, PeopleRepository peopleRepository) {
         this.vehicleRepository = vehicleRepository;
+        this.peopleRepository = peopleRepository; 
     }
 
     @Transactional
@@ -42,18 +49,42 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
 
-    @Transactional
+//    @Transactional
+//    public void deleteVehicle(Long id) {
+//        if (id == null) {
+//            throw new GlobalException("ID cannot be null");
+//        }
+//        Optional<Vehicle> existingVehicleOpt = vehicleRepository.findById(id);
+//        if (existingVehicleOpt.isPresent()) {
+//            vehicleRepository.deleteById(existingVehicleOpt.get().getIdVehicle());
+//            entityManager.flush();
+//        } else {
+//            throw new GlobalException("Unexpected error, please try again");
+//        }
+//
+//    }
+@Transactional
     public void deleteVehicle(Long id) {
-        if (id == null) {
-            throw new GlobalException("ID cannot be null");
-        }
-        Optional<Vehicle> existingVehicleOpt = vehicleRepository.findById(id);
-        if (existingVehicleOpt.isPresent()) {
-            vehicleRepository.deleteById(existingVehicleOpt.get().getIdVehicle());
-        } else {
-            throw new GlobalException("Unexpected error, please try again");
-        }
 
+        
+// Obtén el vehículo que quieres eliminar
+        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
+            Vehicle vehicle = vehicleOptional.get();
+            Optional<People> peopleOpt = peopleRepository.getPeopleById(vehicle.getPeople().getId()); 
+            People people = peopleOpt.get(); 
+            people.getVehicles().remove(vehicle);
+            vehicle.setPeople(null);
+            
+//            // Quita la referencia a 'people' si es necesario
+//            vehicle.getPeople()
+//                vehicle.setPeople(null);  // Esto quita la referencia
+//        
+//
+//            // Asegúrate de hacer flush
+//            entityManager.flush(); // Sincroniza el contexto de persistencia antes de eliminar
+
+            // Luego, elimina el vehículo
+            vehicleRepository.deleteById(id);
     }
     
     

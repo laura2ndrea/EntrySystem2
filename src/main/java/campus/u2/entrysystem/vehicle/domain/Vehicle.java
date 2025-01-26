@@ -23,7 +23,7 @@ public class Vehicle {
     
     @JsonBackReference("vehicle-people")
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_people", nullable = false)
+    @JoinColumn(name = "id_people", nullable = true)
     private People people;
     
 //    @JsonBackReference("vehicle-access")

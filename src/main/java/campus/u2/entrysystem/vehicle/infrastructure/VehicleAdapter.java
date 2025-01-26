@@ -34,7 +34,6 @@ public class VehicleAdapter implements VehicleRepository {
         } 
     }
 
-
     @Override
     public List<Vehicle> findAll() {
         return vehicleJpaRepository.findAll();

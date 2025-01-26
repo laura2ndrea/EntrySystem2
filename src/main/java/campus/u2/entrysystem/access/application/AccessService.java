@@ -51,15 +51,7 @@ public class AccessService {
 
     // To delete and access 
     public void deleteAccess(Long id) {
-        if (id == null) {
-            throw new GlobalException("Id not valid please try again");
-        }
-        Optional<Access> accessOpt = accessRepository.getAccessById(id);
-        if (accessOpt.isPresent()) {
-            accessRepository.deleteAccess(accessOpt.get().getIdAccess());
-        } else {
-            throw new GlobalException("Unexpected error, please try again");
-        }
+        accessRepository.deleteAccess(id); 
     }
 
     // To get all accesses
