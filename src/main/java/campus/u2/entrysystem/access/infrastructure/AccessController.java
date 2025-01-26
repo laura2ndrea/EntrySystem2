@@ -64,6 +64,12 @@ public class AccessController {
     public Access addAccessNoteToAccess(@PathVariable Long idAccess, @RequestBody AccessNote accessNote) {
         return accessService.addAccessNoteToAccess(idAccess, accessNote);
     }
+    
+    //To remove a note to an access 
+    @DeleteMapping("/delete-note/{idAccessNote}")
+    public Access deleteAccessNoteToAccess(@PathVariable Long idAccessNote) {
+        return accessService.removeAccessNoteFromAccess(idAccessNote); 
+    }
 
     // To add a porter to an access
     @PostMapping("/{id}/porters/{idPorter}")

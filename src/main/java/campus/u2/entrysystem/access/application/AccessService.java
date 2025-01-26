@@ -127,26 +127,16 @@ public class AccessService {
 
     // To remove a note from an access
     @Transactional
-    public Access removeAccessNoteFromAccess(Long idAccess, Long idAccessNote) {
-        if (idAccess == null || idAccessNote == null) {
-            throw new GlobalException("Error with the inputs, please try again");
-        }
-        Optional<Access> accessOpt = accessRepository.getAccessById(idAccess);
-        if (accessOpt.isPresent()) {
-            Access access = accessOpt.get();
-            Optional<AccessNote> accessNoteOpt = access.getAccessNotes().stream()
-                    .filter(note -> note.getId().equals(idAccessNote))
-                    .findFirst();
-            if (accessNoteOpt.isPresent()) {
-                AccessNote accessNote = accessNoteOpt.get();
-                access.removeAccessNotes(accessNote);
-                return accessRepository.saveAccess(access);
-            } else {
-                throw new GlobalException("AccessNote with id " + idAccessNote + " not found");
-            }
-        } else {
-            throw new GlobalException("Access with id " + idAccess + "not found");
-        }
+    public Access removeAccessNoteFromAccess(Long idAccessNote) {
+        Optional<AccessNote> noteOpt = noteRepository.findById(idAccessNote); 
+        AccessNote note = noteOpt.get(); 
+        Long idAccess = note.getAccess().getIdAccess(); 
+        Optional<Access> accessOpt = accessRepository.getAccessById(idAccess); 
+        Access access = accessOpt.get(); 
+        note.setAccess(null);
+        access.removeAccessNotes(note);
+        noteRepository.deleteAccessNote(note);
+        return accessRepository.saveAccess(access);
     }
 
     // To add a porter to an access
