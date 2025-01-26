@@ -11,7 +11,6 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -21,8 +20,6 @@ public class GlobalExceptionHandler {
      // ! CUANDO NO ENCUENTRA LA URL
     //Este error ocurre cuando un cliente hace una solicitud a una URL que no tiene un controlador 
     // asociado en la aplicación. Es decir, no se encuentra un manejador (handler) para la solicitud entrante.
-    
-    
     
     // no se puede activar por defecto  no esta habilidato 
     @ExceptionHandler(NoHandlerFoundException.class)

@@ -20,6 +20,7 @@ public class AccessAdapter implements AccessRepository {
     }
 
     //Methods 
+    
     // To save an access
     @Override
     @Transactional

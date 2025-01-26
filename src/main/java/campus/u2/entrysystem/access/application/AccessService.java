@@ -2,6 +2,7 @@ package campus.u2.entrysystem.access.application;
 
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.access.domain.Access;
+import campus.u2.entrysystem.accessnotes.application.AccessNoteRepository;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
 import campus.u2.entrysystem.people.application.PeopleRepository;
 import campus.u2.entrysystem.people.domain.People;
@@ -21,16 +22,19 @@ public class AccessService {
     private final AccessRepository accessRepository;
     private final PortersRepository portersRepository;
     private final PeopleRepository peopleRepository;
+    private final AccessNoteRepository noteRepository;
 
     // Constructor
     @Autowired
-    public AccessService(AccessRepository accessRepository, PortersRepository portersRepository, PeopleRepository peopleRepository) {
+    public AccessService(AccessRepository accessRepository, PortersRepository portersRepository, PeopleRepository peopleRepository, AccessNoteRepository noteRepository) {
         this.accessRepository = accessRepository;
         this.portersRepository = portersRepository;
         this.peopleRepository = peopleRepository;
+        this.noteRepository = noteRepository;
     }
 
     // Methods 
+    
     // To save an access
     @Transactional
     public Access saveAccess(Access access) {
@@ -94,17 +98,14 @@ public class AccessService {
     // To add a note to an access (with an object) 
     @Transactional
     public Access addAccessNoteToAccess(Long idAccess, AccessNote accessNote) {
-        if (idAccess == null || accessNote == null || accessNote.getNote() == null || accessNote.getNote().isEmpty()) {
-            throw new GlobalException("Error with the inputs, please try again");
-        }
-        Optional<Access> accessOpt = accessRepository.getAccessById(idAccess);
-        if (accessOpt.isPresent()) {
-            Access access = accessOpt.get();
-            access.addAccessNotes(accessNote);
-            return accessRepository.saveAccess(access);
-        } else {
-            throw new GlobalException("Access with id " + idAccess + " not found");
-        }
+        Access access = accessRepository.getAccessById(idAccess)
+                .orElseThrow(() -> new GlobalException("Access not found"));
+
+        accessNote.setAccess(access);
+        access.addAccessNotes(accessNote);
+        noteRepository.saveAccessNote(accessNote);
+        accessRepository.saveAccess(access);
+        return access;
     }
 
     // To add a note to an access (create inside the accessNote)

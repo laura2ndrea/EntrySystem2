@@ -60,7 +60,7 @@ public class AccessController {
     }
 
     //To add a note to an access 
-    @PostMapping("/{id}/notes")
+    @PostMapping("/add-note/{idAccess}")
     public Access addAccessNoteToAccess(@PathVariable Long idAccess, @RequestBody AccessNote accessNote) {
         return accessService.addAccessNoteToAccess(idAccess, accessNote);
     }
