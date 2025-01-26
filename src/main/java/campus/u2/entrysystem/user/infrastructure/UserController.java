@@ -4,6 +4,7 @@ import campus.u2.entrysystem.user.application.UserService;
 import campus.u2.entrysystem.user.domain.User;
 import campus.u2.entrysystem.porters.domain.Porters;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.porters.application.PortersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,20 +16,23 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final PortersService portersService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PortersService portersService) {
         this.userService = userService;
+        this.portersService = portersService;
     }
 
- 
-
-    @PostMapping("/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-
+    @PostMapping("/{idPorter}")
+    public ResponseEntity<User> saveUser(@RequestBody User user, @PathVariable Long idPorter) {
+        Porters porterToUser = portersService.getPorterById(idPorter);
+        if (porterToUser == null) {
+            return ResponseEntity.notFound().build();
+        }
+        user.setPorter(porterToUser);
         User savedUser = userService.saveUser(user);
         return ResponseEntity.ok(savedUser);
-
     }
 
     @GetMapping("/porter")

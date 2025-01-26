@@ -72,7 +72,7 @@ public class AccessController {
     }
 
     // To add a porter to an access
-    @PostMapping("/{id}/porters/{idPorter}")
+    @PostMapping("/add-porter/{id}/{idPorter}")
     public Access addPorterToAccess(@PathVariable Long id, @PathVariable Long idPorter) {
         return accessService.addPorterToAccess(id, idPorter);
     }
