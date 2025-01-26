@@ -2,9 +2,7 @@ package campus.u2.entrysystem.people.infrastructure;
 
 import campus.u2.entrysystem.people.application.PeopleService;
 import campus.u2.entrysystem.people.domain.People;
-import campus.u2.entrysystem.company.domain.Company;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

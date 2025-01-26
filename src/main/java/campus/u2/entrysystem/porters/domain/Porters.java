@@ -4,7 +4,6 @@ import campus.u2.entrysystem.Utilities.BaseClassPeople;
 import campus.u2.entrysystem.user.domain.User;
 import campus.u2.entrysystem.access.domain.Access;
 import campus.u2.entrysystem.invoice.domain.Invoice;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
