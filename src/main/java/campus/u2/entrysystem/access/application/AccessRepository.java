@@ -9,6 +9,7 @@ public interface AccessRepository {
 
     Access saveAccess(Access access);
     void deleteAccess(Long id);
+    void deleteAccess(Access access);
     List<Access> getAllAccesses();
     Optional<Access> getAccessById(Long id);
     List<Access> findAccessBetweenDates(Date startDate, Date endDate);

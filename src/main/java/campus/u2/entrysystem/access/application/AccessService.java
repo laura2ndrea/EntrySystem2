@@ -3,11 +3,14 @@ package campus.u2.entrysystem.access.application;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.access.domain.Access;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
+import campus.u2.entrysystem.people.application.PeopleRepository;
+import campus.u2.entrysystem.people.domain.People;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import campus.u2.entrysystem.porters.application.PortersRepository;
 import campus.u2.entrysystem.porters.domain.Porters;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,16 +20,19 @@ public class AccessService {
     // Attributes 
     private final AccessRepository accessRepository;
     private final PortersRepository portersRepository;
+    private final PeopleRepository peopleRepository;
 
     // Constructor
     @Autowired
-    public AccessService(AccessRepository accessRepository, PortersRepository portersRepository) {
+    public AccessService(AccessRepository accessRepository, PortersRepository portersRepository, PeopleRepository peopleRepository) {
         this.accessRepository = accessRepository;
         this.portersRepository = portersRepository;
+        this.peopleRepository = peopleRepository;
     }
 
     // Methods 
     // To save an access
+    @Transactional
     public Access saveAccess(Access access) {
         if (access == null) {
             throw new GlobalException("Empty object, please try again ");
@@ -35,6 +41,7 @@ public class AccessService {
     }
 
     // To create an access 
+    @Transactional
     public Access createAccess(Date entryAccess, Date exitAccess, Boolean accessType) {
         if (entryAccess == null) {
             throw new GlobalException("Entry date cannot be empty");
@@ -50,16 +57,28 @@ public class AccessService {
     }
 
     // To delete and access 
+    @Transactional
     public void deleteAccess(Long id) {
-        accessRepository.deleteAccess(id); 
+        Access access = accessRepository.getAccessById(id)
+                .orElseThrow(() -> new GlobalException("Access not found"));
+
+        People people = peopleRepository.getPeopleById(access.getPeople().getId())
+                .orElseThrow(() -> new GlobalException("People not found"));
+
+        people.removeAccess(access);
+        access.setPeople(null);
+
+        accessRepository.deleteAccess(access); // Importante: Asegúrate de que este es el método correcto para eliminar la entidad
     }
 
     // To get all accesses
+    @Transactional
     public List<Access> getAllAccesses() {
         return accessRepository.getAllAccesses();
     }
 
     // To get an access by id
+    @Transactional
     public Access getAccessById(Long id) {
         if (id == null) {
             throw new GlobalException("Id not valid please try again");
@@ -73,6 +92,7 @@ public class AccessService {
     }
 
     // To add a note to an access (with an object) 
+    @Transactional
     public Access addAccessNoteToAccess(Long idAccess, AccessNote accessNote) {
         if (idAccess == null || accessNote == null || accessNote.getNote() == null || accessNote.getNote().isEmpty()) {
             throw new GlobalException("Error with the inputs, please try again");
@@ -87,7 +107,8 @@ public class AccessService {
         }
     }
 
-    // To add a note to an access (create inside the accessNote) 
+    // To add a note to an access (create inside the accessNote)
+    @Transactional
     public Access addAccessNoteToAccess(Long idAccess, String note) {
         if (idAccess == null || note == null || note.isEmpty()) {
             throw new GlobalException("Error with the inputs, please try again");
@@ -104,6 +125,7 @@ public class AccessService {
     }
 
     // To remove a note from an access
+    @Transactional
     public Access removeAccessNoteFromAccess(Long idAccess, Long idAccessNote) {
         if (idAccess == null || idAccessNote == null) {
             throw new GlobalException("Error with the inputs, please try again");
@@ -127,6 +149,7 @@ public class AccessService {
     }
 
     // To add a porter to an access
+    @Transactional
     public Access addPorterToAccess(Long accessId, Long porterId) {
         Access access = accessRepository.getAccessById(accessId)
                 .orElseThrow(() -> new RuntimeException("Access with ID " + accessId + " not found."));
@@ -140,6 +163,7 @@ public class AccessService {
     }
 
     // To remove a porter from an access
+    @Transactional
     public Access removePorterFromAccess(Long accessId, Long porterId) {
         Optional<Access> accessOpt = accessRepository.getAccessById(accessId);
         if (accessOpt.isPresent()) {
@@ -158,13 +182,12 @@ public class AccessService {
     }
 
     // To find all the access between two dates
+    @Transactional
     public List<Access> findAccessBetweenDates(Date startDate, Date endDate) {
         if (startDate == null || endDate == null) {
             throw new GlobalException("Date is not valid");
         }
         return accessRepository.findAccessBetweenDates(startDate, endDate);
     }
-    
-  
 
 }

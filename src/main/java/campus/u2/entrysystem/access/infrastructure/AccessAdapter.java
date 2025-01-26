@@ -1,6 +1,5 @@
 package campus.u2.entrysystem.access.infrastructure;
 
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.access.application.AccessRepository;
 import campus.u2.entrysystem.access.domain.Access;
 import java.util.Date;
@@ -32,21 +31,18 @@ public class AccessAdapter implements AccessRepository {
     @Override
     @Transactional
     public void deleteAccess(Long id) {
-        Optional <Access> access = accessRepository.findById(id); 
-        accessRepository.delete(access.get());
+        if (accessRepository.existsById(id)) {
+            accessRepository.deleteById(id);
+        }
     }
-//    public void deleteAccess(Long id) {
-//        if (id == null) {
-//            throw new GlobalException("Id not valid, please try again");
-//        }
-//
-//        // Verifica si el registro existe antes de intentar eliminarlo
-//        if (accessRepository.existsById(id)) {
-//            accessRepository.deleteById(id); // Elimina el acceso usando el repositorio JPA
-//        } else {
-//            throw new GlobalException("Access not found for id " + id);
-//        }
-//    }
+    
+    @Override
+    @Transactional
+    public void deleteAccess(Access access) {
+        if (accessRepository.existsById(access.getIdAccess())) {
+            accessRepository.delete(access);
+        }
+    }
 
     // To get all accesses
     @Override

@@ -3,7 +3,6 @@ package campus.u2.entrysystem.access.domain;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
 import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.porters.domain.Porters;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -39,10 +38,6 @@ public class Access {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_people", nullable = true)
     private People people;
-    
-//    @JsonManagedReference("vehicle-access")
-//    @OneToMany(mappedBy = "access", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<Vehicle> vehicles = new ArrayList<>();
     
     @JsonManagedReference("notes-access")
     @OneToMany(mappedBy = "access", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -106,20 +101,6 @@ public class Access {
     public void setPeople(People people) {
         this.people = people;
     }
-
-//    public List<Vehicle> getVehicles() {
-//        return vehicles;
-//    }
-
-//    public void addVehicles(Vehicle vehicle) {
-//        this.vehicles.add(vehicle);
-//        vehicle.setAccess(this);
-//    }
-//
-//    public void removeVehicles(Vehicle vehicle) {
-//        this.vehicles.remove(vehicle);
-//        vehicle.setAccess(null);
-//    }
 
     public List<AccessNote> getAccessNotes() {
         return accessNotes;

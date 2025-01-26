@@ -133,6 +133,16 @@ public class People extends BaseClassPeople {
         this.vehicles.remove(vehicle);
         vehicle.setPeople(null);
     }
+    
+     public void addAccess(Access access) {
+        this.access.add(access);
+        access.setPeople(this);
+    }
+
+    public void removeAccess(Access access) {
+        this.access.remove(access);
+        access.setPeople(null);
+    }
 
     public Carnet getCarnet() {
         return carnet;
