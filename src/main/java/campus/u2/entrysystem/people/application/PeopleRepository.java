@@ -7,6 +7,7 @@ import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
 import java.util.List;
 import java.util.Optional;
+import  campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
 
 
 public interface PeopleRepository { 
@@ -26,7 +27,8 @@ public interface PeopleRepository {
     Optional<People>   getPeopleByCedula(String cedula);
     
     
-    
+    RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment);
+    Optional<RegisteredEquipment> getRegisteredEquipmentById(Long id);
     
     
     

@@ -78,7 +78,7 @@ public class AccessController {
     }
 
     // To delete a porter from an access 
-    @DeleteMapping("/{id}/porters/{idPorter}")
+    @DeleteMapping("delete-porter/{id}/{idPorter}")
     public Access removePorterFromAccess(@PathVariable Long id, @PathVariable Long idPorter) {
         return accessService.removePorterFromAccess(id, idPorter);
     }

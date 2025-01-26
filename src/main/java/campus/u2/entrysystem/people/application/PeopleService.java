@@ -17,6 +17,7 @@ public class PeopleService  {
 
     private final PeopleRepository peopleRepository;
     private final CarnetRepository carnetRepository;
+  
 
     @Autowired
     public PeopleService(PeopleRepository peopleRepository, CarnetRepository carnetRepository) {
@@ -33,6 +34,17 @@ public class PeopleService  {
         return peopleRepository.savePeople(people);
     }
 
+    
+    public RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment){
+        if(registeredEquipment == null){
+            throw  new GlobalException("Error de Registro de Equipp");
+        }
+            return peopleRepository.saveRegisteredEquipment(registeredEquipment);
+
+    }
+    
+    
+    
     public People savePeople(String name, String cedula, String telefono, Boolean personType, Company company) {
 
         if (name == null || name.isEmpty()) {
@@ -75,6 +87,8 @@ public class PeopleService  {
         return peopleRepository.savePeople(people);
     }
 
+    
+    
 
     public People addEquipmentToPerson(Long personId, RegisteredEquipment equipment) {
 
@@ -181,4 +195,10 @@ public class PeopleService  {
                 .orElseThrow(() -> new RuntimeException("People with ID " + cedula + " not found."));
     }
 
+    
+    public Optional<RegisteredEquipment> getRegisteredEquipmentByid(Long id){
+        return peopleRepository.getRegisteredEquipmentById(id);
+    
+    }
+    
 }

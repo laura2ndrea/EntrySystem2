@@ -36,6 +36,8 @@ public class RegisteredEquipment {
         this.description = description;
     }
 
+    
+    
     public Long getId() {
         return id;
     }

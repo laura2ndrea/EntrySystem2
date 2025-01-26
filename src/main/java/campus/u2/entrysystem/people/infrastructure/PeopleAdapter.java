@@ -5,6 +5,7 @@ import campus.u2.entrysystem.company.domain.Company;
 import campus.u2.entrysystem.people.application.PeopleRepository;
 import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
+import campus.u2.entrysystem.registeredequipment.infrastructure.RegisteredEquipmentJpaRepositpry;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Component;
 public class PeopleAdapter implements PeopleRepository {
 
     private final PeopleJpaRepository peopleJpaRepository;
+    
+    private final RegisteredEquipmentJpaRepositpry registeredEquipmentJpaRepositpry;
 
     @Autowired
-    public PeopleAdapter(PeopleJpaRepository peopleJpaRepository) {
+    public PeopleAdapter(PeopleJpaRepository peopleJpaRepository, RegisteredEquipmentJpaRepositpry registeredEquipmentJpaRepositpry) {
         this.peopleJpaRepository = peopleJpaRepository;
+        this.registeredEquipmentJpaRepositpry =registeredEquipmentJpaRepositpry;
     }
 
     @Transactional
@@ -155,6 +159,19 @@ public class PeopleAdapter implements PeopleRepository {
     public People savePeople(String name, String cedula, String telefono, Boolean personType) {
         People people = new People(personType, name, cedula, telefono);
         return peopleJpaRepository.save(people);
+    }
+
+    @Override
+    public RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment) {
+
+        return registeredEquipmentJpaRepositpry.save(registeredEquipment);
+        
+        
+    }
+
+    @Override
+    public Optional<RegisteredEquipment> getRegisteredEquipmentById(Long id) {
+        return registeredEquipmentJpaRepositpry.findById(id);
     }
 
     
