@@ -59,4 +59,24 @@ public class UserController {
         User user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
+
+    @PutMapping 
+    public ResponseEntity<User>updateUser(@RequestBody User user) {
+        User userToUpdate =  userService.getUserById(user.getId());
+        if (userToUpdate == null){
+          return ResponseEntity.badRequest().build();
+        }
+        userToUpdate.setUserName(user.getUserName());
+        userToUpdate.setPassword(user.getPassword());
+        
+       userService.saveUser(userToUpdate);
+       return ResponseEntity.ok(userToUpdate);
+       
+        
+        
+        
+    }
+
+
+
 }
