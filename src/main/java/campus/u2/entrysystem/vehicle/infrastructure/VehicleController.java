@@ -1,5 +1,7 @@
 package campus.u2.entrysystem.vehicle.infrastructure;
 
+import campus.u2.entrysystem.people.application.PeopleService;
+import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.vehicle.application.VehicleService;
 import campus.u2.entrysystem.vehicle.domain.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +17,27 @@ import org.springframework.http.ResponseEntity;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private final PeopleService peopleService;
 
     @Autowired
-    public VehicleController(VehicleService vehicleService) {
+    public VehicleController(VehicleService vehicleService, PeopleService peopleService) {
         this.vehicleService = vehicleService;
+        this.peopleService = peopleService;
     }
+
 //funciona
     @GetMapping
     public List<Vehicle> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 //funciona
+
     @GetMapping("/{idVehicle}")
     public Optional<Vehicle> findbyId(@PathVariable Long idVehicle) {
         return vehicleService.findbyId(idVehicle);
     }
 //funciona
+
     @GetMapping("/plate/{plate}")
     public Optional<Vehicle> findByPlate(@PathVariable String plate) {
         return vehicleService.findVehicleByPlate(plate);
@@ -41,24 +48,41 @@ public class VehicleController {
         return ResponseEntity.ok(vehicleService.saveVehicle(vehicle));
     }
 // funciona
+
     @DeleteMapping("{idVehicle}")
     public void deleteVehicle(@PathVariable Long idVehicle) {
         vehicleService.deleteVehicle(idVehicle);
     }
-    
-    
-  @PutMapping
-public ResponseEntity<Vehicle> updateVehicle(@RequestBody Vehicle vehicle) {
-    Optional<Vehicle> existingVehicleOpt = vehicleService.findbyId(vehicle.getIdVehicle());
-    if (existingVehicleOpt.isPresent()) {
-        Vehicle updatedVehicle = vehicleService.saveVehicle(vehicle);
-        return ResponseEntity.ok(updatedVehicle);
-    } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-    }
-}
 
-    
-    
-    
+    @PostMapping("/{personId}")
+    public ResponseEntity<People> addVehicleToPerson(@PathVariable Long personId, @RequestBody Vehicle vehicle) {
+        People people = peopleService.getPeopleById(personId);
+        if (people == null) {
+            return ResponseEntity.notFound().build();
+        }
+        people.addVehicle(vehicle);
+
+        peopleService.savePeople(people);
+
+        return ResponseEntity.ok(people);
+    }
+
+    @PutMapping("/{idVehicle}")
+    public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long idVehicle, @RequestBody Vehicle vehicle) {
+        Optional<Vehicle> existingVehicleOpt = vehicleService.findbyId(idVehicle);
+        if (existingVehicleOpt.isPresent()) {
+            Vehicle existingVehicle = existingVehicleOpt.get();
+
+            if (vehicle.getPlate() != null) {
+                existingVehicle.setPlate(vehicle.getPlate());
+            }
+            existingVehicle.setVehicleType(vehicle.getVehicleType());
+
+            Vehicle updatedVehicle = vehicleService.saveVehicle(existingVehicle);
+            return ResponseEntity.ok(updatedVehicle);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 }

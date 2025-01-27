@@ -55,7 +55,7 @@ public class Vehicle {
         this.plate = plate;
     }
 
-    public boolean isVehicleType() {
+    public boolean getVehicleType() {
         return vehicleType;
     }
 
