@@ -5,7 +5,9 @@ import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.carnet.application.CarnetRepository;
 import campus.u2.entrysystem.carnet.domain.Carnet;
+import campus.u2.entrysystem.company.application.CompanyRepository;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.*;
@@ -13,38 +15,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PeopleService  {
+public class PeopleService {
 
     private final PeopleRepository peopleRepository;
     private final CarnetRepository carnetRepository;
-  
+    private final CompanyRepository companyrepository;
 
     @Autowired
-    public PeopleService(PeopleRepository peopleRepository, CarnetRepository carnetRepository) {
+    public PeopleService(PeopleRepository peopleRepository, CarnetRepository carnetRepository, CompanyRepository companyrepository) {
         this.peopleRepository = peopleRepository;
         this.carnetRepository = carnetRepository; 
+        this.companyrepository = companyrepository;
     }
 
 // To Save People 
-  
     public People savePeople(People people) {
-        if (people == null){
+        if (people == null) {
             throw new GlobalException("Empty object, please try again ");
         }
         return peopleRepository.savePeople(people);
     }
 
-    
-    public RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment){
-        if(registeredEquipment == null){
-            throw  new GlobalException("Error de Registro de Equipp");
+    public RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment) {
+        if (registeredEquipment == null) {
+            throw new GlobalException("Error de Registro de Equipp");
         }
-            return peopleRepository.saveRegisteredEquipment(registeredEquipment);
+        return peopleRepository.saveRegisteredEquipment(registeredEquipment);
 
     }
-    
-    
-    
+
     public People savePeople(String name, String cedula, String telefono, Boolean personType, Company company) {
 
         if (name == null || name.isEmpty()) {
@@ -58,7 +57,7 @@ public class PeopleService  {
         }
         People people = new People(personType, company, name, cedula, telefono);
         if (Boolean.TRUE.equals(personType)) {
-            Carnet carnet = new Carnet(); 
+            Carnet carnet = new Carnet();
             carnet.setPeople(people);
             people.setCarnet(carnet);
         }
@@ -87,9 +86,6 @@ public class PeopleService  {
         return peopleRepository.savePeople(people);
     }
 
-    
-    
-
     public People addEquipmentToPerson(Long personId, RegisteredEquipment equipment) {
 
         if (personId == null) {
@@ -107,7 +103,7 @@ public class PeopleService  {
     }
 
     @Transactional
-   public People removeEquipmentFromPerson(Long personId, Long equipmentId) {
+    public People removeEquipmentFromPerson(Long personId, Long equipmentId) {
         if (personId == null) {
             throw new GlobalException("Id cannot be empty");
         }
@@ -173,6 +169,23 @@ public class PeopleService  {
 
     }
 
+    @Transactional
+    public void deletePeople(Long id) {
+        Optional<People> optionalPeople = peopleRepository.getPeopleById(id);
+        if (optionalPeople.isPresent()) {
+            People people = optionalPeople.get();
+            Company company = people.getCompany();
+
+            company.getPeopleList().remove(people);
+            people.setCompany(null);
+            peopleRepository.deletePeople(people.getId());
+
+            companyrepository.saveCompany(company);
+        } else {
+            throw new EntityNotFoundException("Person not found");
+        }
+    }
+
     // To list all porters
     public List<People> listAllPeople() {
         return peopleRepository.listAllPeople();
@@ -195,10 +208,9 @@ public class PeopleService  {
                 .orElseThrow(() -> new RuntimeException("People with ID " + cedula + " not found."));
     }
 
-    
-    public Optional<RegisteredEquipment> getRegisteredEquipmentByid(Long id){
+    public Optional<RegisteredEquipment> getRegisteredEquipmentByid(Long id) {
         return peopleRepository.getRegisteredEquipmentById(id);
-    
+
     }
-    
+
 }
