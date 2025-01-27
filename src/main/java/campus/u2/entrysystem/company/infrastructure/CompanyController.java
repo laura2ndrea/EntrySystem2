@@ -6,6 +6,8 @@ import campus.u2.entrysystem.people.application.PeopleService;
 import campus.u2.entrysystem.people.domain.People;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +46,39 @@ public class CompanyController {
         Company company = companyService.getCompanyById(idCompany);
         People employee = peopleService.getPeopleById(idEmployee);
         return companyService.addEmployeeToCompany(company, employee);
+    }
+
+    @PostMapping("/{idCompany}")
+    public ResponseEntity<People> savePeopleCompany(@PathVariable Long idCompany, @RequestBody People people) {
+        Company company = companyService.getCompanyById(idCompany);
+        if (company == null) {
+            return ResponseEntity.notFound().build();
+        }
+        people.setCompany(company);
+        People savedPeople = peopleService.savePeople(people);
+        return ResponseEntity.ok(savedPeople);
+    }
+
+    @DeleteMapping("/{idCompany}/{idpeople}")
+    public ResponseEntity<String> deletePeopleCompany(@PathVariable Long idCompany, @PathVariable Long idpeople) {
+        Company company = companyService.getCompanyById(idCompany);
+        if (company == null) {
+            return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
+        }
+
+        People people = peopleService.getPeopleById(idpeople);
+        if (people == null) {
+            return new ResponseEntity<>("People not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (!company.getPeopleList().contains(people)) {
+            return new ResponseEntity<>("Person is not associated with the company", HttpStatus.BAD_REQUEST);
+        }
+
+        company.getPeopleList().remove(people);
+        companyService.saveCompany(company);
+
+        return new ResponseEntity<>("Person deleted successfully", HttpStatus.OK);
     }
 
     // To delete a company 
@@ -88,5 +123,43 @@ public class CompanyController {
         } else {
             return companyService.saveCompany(newCompany);
         }
+    }
+
+    @PutMapping("/{idCompany}/{identifier}")
+    public ResponseEntity<People> updatePeopleFromCompany(@PathVariable Long idCompany, @PathVariable String identifier, @RequestBody People people) {
+        Company company = companyService.getCompanyById(idCompany);
+        if (company == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        People peopleToUpdate;
+        try {
+            Long id = Long.valueOf(identifier);
+            peopleToUpdate = peopleService.getPeopleById(id);
+        } catch (NumberFormatException e) {
+            peopleToUpdate = peopleService.getPeopleByCedula(identifier);
+        }
+
+        if (peopleToUpdate == null || !peopleToUpdate.getCompany().getId_company().equals(idCompany)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (people.getName() != null) {
+            peopleToUpdate.setName(people.getName());
+        }
+        if (people.getCedula() != null) {
+            peopleToUpdate.setCedula(people.getCedula());
+        }
+        if (people.getPersonType() != null) {
+            peopleToUpdate.setPersonType(people.getPersonType());
+        }
+        if (people.getTelefono() != null) {
+            peopleToUpdate.setTelefono(people.getTelefono());
+        }
+
+        // Asegúrate de guardar los cambios
+        peopleService.savePeople(peopleToUpdate);
+
+        return ResponseEntity.ok(peopleToUpdate);
     }
 }
