@@ -11,7 +11,7 @@ public class Carnet {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long idCarnet;
     
-    @Column(nullable = false, unique = true)
+    @Column( unique = true , nullable = true)
     private String code; 
     
     @Column(nullable = false)
@@ -19,7 +19,7 @@ public class Carnet {
     
     @JsonBackReference("carnet-people")
     @OneToOne
-    @JoinColumn(name = "id_people", nullable = false)
+    @JoinColumn(name = "id_people")
     private People people; 
     
     // Constructor

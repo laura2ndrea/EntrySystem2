@@ -5,35 +5,37 @@ import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.company.domain.Company;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.carnet.application.CarnetService;
+import campus.u2.entrysystem.carnet.domain.Carnet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/people")
 public class PeopleController {
 
     private final PeopleService peopleService;
+    private final CarnetService carnetService;
 
     @Autowired
-    public PeopleController(PeopleService peopleService) {
+    public PeopleController(PeopleService peopleService, CarnetService carnetService) {
         this.peopleService = peopleService;
+        this.carnetService = carnetService;
     }
 
     @PostMapping
     public ResponseEntity<People> savePeople(@RequestBody People people) {
-
         People savedPeople = peopleService.savePeople(people);
         return ResponseEntity.ok(savedPeople);
     }
 
-    
-    
-    
-    
+
+
     // AGREGAR El Equipo y asignarselo a una perosna existente 
 //    
 //    			{
@@ -41,9 +43,7 @@ public class PeopleController {
 //				"registrationDate": "2025-01-24",
 //				"description": "Laptop Dell Insgregergegrpiron"
 //			}
-    
     // Body para crear el equipo  el id ya debe estar creado 
-    
     @PostMapping("/{personId}/equipment")
     public ResponseEntity<People> addEquipmentToPerson(@PathVariable Long personId, @RequestBody RegisteredEquipment equipment) {
         People peopleToUpdate = peopleService.getPeopleById(personId);
@@ -59,7 +59,6 @@ public class PeopleController {
         return ResponseEntity.ok(peopleToUpdate);
     }
 
-    
     @DeleteMapping("/{personId}/removeEquipment/{equipmentId}")
     public ResponseEntity<People> removeEquipmentFromPerson(@PathVariable Long personId,
             @PathVariable Long equipmentId) {
@@ -122,24 +121,38 @@ public class PeopleController {
         peopleToUpdate.setTelefono(people.getTelefono());
         return ResponseEntity.ok(peopleToUpdate);
     }
-
-   @PutMapping("/equipment")
-public ResponseEntity<RegisteredEquipment> updateEquipment(@RequestBody RegisteredEquipment equipment) {
-    Optional<RegisteredEquipment> equipmentToUpdateOpt = peopleService.getRegisteredEquipmentByid(equipment.getId());
     
-    if (!equipmentToUpdateOpt.isPresent()) {
-        return ResponseEntity.notFound().build();
+    
+    // ya deb estar la perosna crea pero solo necesita el person id para asignarle 
+    @PutMapping("/carnettoupdate/{idpeople}")
+    public ResponseEntity<People>  updateCarnetPeople(@PathVariable Long idpeople) {
+        
+        Carnet carnetAsignacion =  carnetService.createCarnet();
+        People PeopleUpDate =  peopleService.getPeopleById(idpeople);
+        PeopleUpDate.setCarnet(carnetAsignacion);
+        carnetAsignacion.setPeople(PeopleUpDate);
+        peopleService.savePeople(PeopleUpDate);
+        carnetService.saveCarnet(carnetAsignacion);
+        return ResponseEntity.ok(PeopleUpDate);
     }
 
-    RegisteredEquipment equipmentToUpdate = equipmentToUpdateOpt.get();
     
-    equipmentToUpdate.setSerial(equipment.getSerial());
-    equipmentToUpdate.setRegistrationDate(equipment.getRegistrationDate());
-    equipmentToUpdate.setDescription(equipment.getDescription());
-    peopleService.saveRegisteredEquipment(equipmentToUpdate);
-    return ResponseEntity.ok(equipmentToUpdate);
-}
+    
+    @PutMapping("/equipment")
+    public ResponseEntity<RegisteredEquipment> updateEquipment(@RequestBody RegisteredEquipment equipment) {
+        Optional<RegisteredEquipment> equipmentToUpdateOpt = peopleService.getRegisteredEquipmentByid(equipment.getId());
 
-    
-    
+        if (!equipmentToUpdateOpt.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        RegisteredEquipment equipmentToUpdate = equipmentToUpdateOpt.get();
+
+        equipmentToUpdate.setSerial(equipment.getSerial());
+        equipmentToUpdate.setRegistrationDate(equipment.getRegistrationDate());
+        equipmentToUpdate.setDescription(equipment.getDescription());
+        peopleService.saveRegisteredEquipment(equipmentToUpdate);
+        return ResponseEntity.ok(equipmentToUpdate);
+    }
+
 }
