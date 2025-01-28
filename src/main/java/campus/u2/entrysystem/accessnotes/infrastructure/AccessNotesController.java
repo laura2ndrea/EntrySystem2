@@ -22,7 +22,7 @@ public class AccessNotesController {
     }
 
     @GetMapping("/{idAccess}/")
-    public ResponseEntity<List<AccessNote>> getAccessNotes(@PathVariable Long idAccess) {
+    public ResponseEntity<List<AccessNote>> getAccessNotes(@PathVariable String idAccess) {
 
         Access access = accessService.getAccessById(idAccess);
         List<AccessNote> accessNotes = access.getAccessNotes();

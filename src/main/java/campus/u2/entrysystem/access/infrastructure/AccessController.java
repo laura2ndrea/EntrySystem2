@@ -43,7 +43,7 @@ public class AccessController {
 
     // To get an access for the id 
     @GetMapping("/{id}")
-    public Access getAccessById(@PathVariable Long id) {
+    public Access getAccessById(@PathVariable String id) {
         return accessService.getAccessById(id);
     }
 
@@ -55,7 +55,7 @@ public class AccessController {
 
     // To delete an access 
     @DeleteMapping("/{id}")
-    public void deleteAccess(@PathVariable Long id) {
+    public void deleteAccess(@PathVariable String id) {
         accessService.deleteAccess(id);
     }
 
@@ -91,7 +91,7 @@ public class AccessController {
 
     // To update a porter in an access 
     @PutMapping("/{idAccess}/porters/{idPorter}")
-    public Access updatePorterInAccess(@PathVariable Long idAccess, @PathVariable Long idPorter) {
+    public Access updatePorterInAccess(@PathVariable String idAccess, @PathVariable Long idPorter) {
         Access access = accessService.getAccessById(idAccess);
         if (access == null) {
             throw new GlobalException("Access with id " + idAccess + " not found");

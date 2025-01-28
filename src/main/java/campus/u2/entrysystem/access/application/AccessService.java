@@ -1,6 +1,9 @@
 package campus.u2.entrysystem.access.application;
 
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
+import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
+import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
 import campus.u2.entrysystem.access.domain.Access;
 import campus.u2.entrysystem.accessnotes.application.AccessNoteRepository;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
@@ -39,7 +42,7 @@ public class AccessService {
     @Transactional
     public Access saveAccess(Access access) {
         if (access == null) {
-            throw new GlobalException("Empty object, please try again ");
+            throw new InvalidInputException("Access object cannot be null");
         }
         return accessRepository.saveAccess(access);
     }
@@ -48,13 +51,13 @@ public class AccessService {
     @Transactional
     public Access createAccess(Date entryAccess, Date exitAccess, Boolean accessType) {
         if (entryAccess == null) {
-            throw new GlobalException("Entry date cannot be empty");
+            throw new InvalidInputException("Entry date cannot be null");
         }
         if (exitAccess == null) {
-            throw new GlobalException("Exist date cannot be empty");
+            throw new InvalidInputException("Exit date cannot be null");
         }
         if (accessType == null) {
-            throw new GlobalException("Access type cannot be empty");
+            throw new InvalidInputException("Access type cannot be null");
         }
         Access access = new Access(entryAccess, exitAccess, accessType);
         return accessRepository.saveAccess(access);
@@ -62,17 +65,25 @@ public class AccessService {
 
     // To delete and access 
     @Transactional
-    public void deleteAccess(Long id) {
-        Access access = accessRepository.getAccessById(id)
-                .orElseThrow(() -> new GlobalException("Access not found"));
+    public void deleteAccess(String id) {
+        if (id == null) {
+                throw new InvalidInputException("ID cannot be null");
+            }
+        try {
+            Long accessId = Long.parseLong(id);
+            Access access = accessRepository.getAccessById(accessId)
+                .orElseThrow(() -> new NotFoundException("Access with ID " + id + " not found"));
 
-        People people = peopleRepository.getPeopleById(access.getPeople().getId())
-                .orElseThrow(() -> new GlobalException("People not found"));
+            People people = peopleRepository.getPeopleById(access.getPeople().getId())
+                    .orElseThrow(() -> new NotFoundException("Person associated with Access not found"));
 
-        people.removeAccess(access);
-        access.setPeople(null);
+            people.removeAccess(access);
+            access.setPeople(null);
+            accessRepository.deleteAccess(access);
 
-        accessRepository.deleteAccess(access); // Importante: Asegúrate de que este es el método correcto para eliminar la entidad
+        } catch (NumberFormatException ex) {
+            throw new TypeMismatchException("id", "Long", "invalid format: " + id);
+        }
     }
 
     // To get all accesses
@@ -80,20 +91,26 @@ public class AccessService {
     public List<Access> getAllAccesses() {
         return accessRepository.getAllAccesses();
     }
+    
 
     // To get an access by id
     @Transactional
-    public Access getAccessById(Long id) {
+    public Access getAccessById(String id) {
         if (id == null) {
-            throw new GlobalException("Id not valid please try again");
-        }
-        Optional<Access> accessOpt = accessRepository.getAccessById(id);
-        if (accessOpt.isPresent()) {
-            return accessOpt.get();
-        } else {
-            throw new GlobalException("Id is not valid please try again ");
+                throw new InvalidInputException("ID cannot be null");
+            }
+        try {
+            Long accessId = Long.parseLong(id);
+
+            return accessRepository.getAccessById(accessId)
+                    .orElseThrow(() -> new NotFoundException("Access with ID " + accessId + " not found"));
+
+        } catch (NumberFormatException ex) {
+            throw new TypeMismatchException("id", "Long", "invalid format: " + id);
         }
     }
+    
+    // QUEDE AQUI, REVISAR LO DE ABAJO DE ESTE COMENTARIO 
 
     // To add a note to an access (with an object) 
     @Transactional
