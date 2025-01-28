@@ -49,7 +49,7 @@ public class VehicleController {
     }
 // funciona
 
-    @DeleteMapping("{idVehicle}")
+    @DeleteMapping("/{idVehicle}")
     public void deleteVehicle(@PathVariable Long idVehicle) {
         vehicleService.deleteVehicle(idVehicle);
     }
