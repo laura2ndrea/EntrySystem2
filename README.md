@@ -139,6 +139,292 @@ Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE.md
 * Dona con cripto a esta dirección: `0xf253fc233333078436d111175e5a76a649890000`
 * etc.
 
+# Documentación de la API
 
+## Descripción General
+Esta API proporciona endpoints para la gestión de usuarios, porteros, personas, empresas, carnets, control de acceso, membresías y facturas en un sistema de gestión de instalaciones.
+
+## URL Base
+```
+http://localhost:3000
+```
+
+## Autenticación
+Los detalles de autenticación no están especificados en la documentación de la API.
+
+## Recursos
+
+### 1. Gestión de Usuarios
+
+#### Listar Todos los Usuarios
+- **GET** `/api/user`
+- **Descripción**: Obtiene una lista de todos los usuarios
+- **Respuesta**: Array de objetos Usuario
+
+#### Obtener Usuario por ID
+- **GET** `/api/user/{id}`
+- **Descripción**: Obtiene un usuario específico por ID
+- **Parámetros**:
+  - `id` (path, requerido): ID del usuario
+- **Respuesta**: Objeto Usuario
+
+#### Actualizar Usuario
+- **PUT** `/api/user`
+- **Descripción**: Actualiza un usuario existente
+- **Cuerpo de la Petición**: Objeto Usuario
+- **Respuesta**: Objeto Usuario actualizado
+
+#### Crear Usuario para Portero
+- **POST** `/api/user/{idPorter}`
+- **Descripción**: Crea un nuevo usuario asociado a un portero
+- **Parámetros**:
+  - `idPorter` (path, requerido): ID del portero
+- **Cuerpo de la Petición**: Objeto Usuario
+- **Respuesta**: Objeto Usuario creado
+
+### 2. Gestión de Porteros
+
+#### Listar Todos los Porteros
+- **GET** `/api/porters`
+- **Descripción**: Obtiene una lista de todos los porteros
+- **Respuesta**: Array de objetos Portero
+
+#### Obtener Portero por ID
+- **GET** `/api/porters/{id}`
+- **Descripción**: Obtiene un portero específico por ID
+- **Parámetros**:
+  - `id` (path, requerido): ID del portero
+- **Respuesta**: Objeto Portero
+
+#### Crear Portero
+- **POST** `/api/porters`
+- **Descripción**: Crea un nuevo portero
+- **Cuerpo de la Petición**: Objeto Portero
+- **Respuesta**: Objeto Portero creado
+
+#### Actualizar Portero
+- **PUT** `/api/porters/{id}`
+- **Descripción**: Actualiza un portero existente
+- **Parámetros**:
+  - `id` (path, requerido): ID del portero
+- **Cuerpo de la Petición**: Objeto Portero
+- **Respuesta**: Objeto Portero actualizado
+
+#### Añadir Jefe a Portero
+- **PUT** `/api/porters/{idPorter}/boss/{idBoss}`
+- **Descripción**: Asigna un jefe a un portero
+- **Parámetros**:
+  - `idPorter` (path, requerido): ID del portero
+  - `idBoss` (path, requerido): ID del jefe
+- **Respuesta**: Objeto Portero actualizado
+
+### 3. Gestión de Personas
+
+#### Listar Todas las Personas
+- **GET** `/api/people`
+- **Descripción**: Obtiene una lista de todas las personas
+- **Respuesta**: Array de objetos Persona
+
+#### Obtener Persona por ID
+- **GET** `/api/people/{id}`
+- **Descripción**: Obtiene una persona específica por ID
+- **Parámetros**:
+  - `id` (path, requerido): ID de la persona
+- **Respuesta**: Objeto Persona
+
+#### Crear Persona
+- **POST** `/api/people`
+- **Descripción**: Crea una nueva persona
+- **Cuerpo de la Petición**: Objeto Persona
+- **Respuesta**: Objeto Persona creado
+
+#### Actualizar Persona
+- **PUT** `/api/people`
+- **Descripción**: Actualiza una persona existente
+- **Cuerpo de la Petición**: Objeto Persona
+- **Respuesta**: Objeto Persona actualizado
+
+### 4. Gestión de Equipos
+
+#### Añadir Equipo a Persona
+- **POST** `/api/people/{personId}/equipment`
+- **Descripción**: Añade un equipo al registro de una persona
+- **Parámetros**:
+  - `personId` (path, requerido): ID de la persona
+- **Cuerpo de la Petición**: Objeto EquipoRegistrado
+- **Respuesta**: Objeto Persona actualizado
+
+#### Actualizar Equipo
+- **PUT** `/api/people/equipment`
+- **Descripción**: Actualiza un equipo existente
+- **Cuerpo de la Petición**: Objeto EquipoRegistrado
+- **Respuesta**: Objeto EquipoRegistrado actualizado
+
+### 5. Gestión de Empresas
+
+#### Listar Todas las Empresas
+- **GET** `/api/company`
+- **Descripción**: Obtiene una lista de todas las empresas
+- **Respuesta**: Array de objetos Empresa
+
+#### Obtener Empresa por ID
+- **GET** `/api/company/{id}`
+- **Descripción**: Obtiene una empresa específica por ID
+- **Parámetros**:
+  - `id` (path, requerido): ID de la empresa
+- **Respuesta**: Objeto Empresa
+
+#### Crear Empresa
+- **POST** `/api/company`
+- **Descripción**: Crea una nueva empresa
+- **Cuerpo de la Petición**: Objeto Empresa
+- **Respuesta**: Objeto Empresa creado
+
+#### Añadir Empleado a Empresa
+- **POST** `/api/company/{idCompany}/employee/{idEmployee}`
+- **Descripción**: Añade un empleado a una empresa
+- **Parámetros**:
+  - `idCompany` (path, requerido): ID de la empresa
+  - `idEmployee` (path, requerido): ID del empleado
+- **Respuesta**: Objeto Empresa actualizado
+
+### 6. Control de Acceso
+
+#### Listar Todos los Registros de Acceso
+- **GET** `/api/access`
+- **Descripción**: Obtiene todos los registros de acceso
+- **Respuesta**: Array de objetos Acceso
+
+#### Crear Registro de Acceso
+- **POST** `/api/access`
+- **Descripción**: Crea un nuevo registro de acceso
+- **Cuerpo de la Petición**: Objeto Acceso
+- **Respuesta**: Objeto Acceso creado
+
+#### Añadir Nota a Registro de Acceso
+- **POST** `/api/access/add-note/{idAccess}`
+- **Descripción**: Añade una nota a un registro de acceso
+- **Parámetros**:
+  - `idAccess` (path, requerido): ID del acceso
+- **Cuerpo de la Petición**: Objeto NotaAcceso
+- **Respuesta**: Objeto Acceso actualizado
+
+### 7. Gestión de Carnets
+
+#### Listar Todos los Carnets
+- **GET** `/api/carnet`
+- **Descripción**: Obtiene todos los carnets
+- **Respuesta**: Array de objetos Carnet
+
+#### Crear Carnet
+- **POST** `/api/carnet`
+- **Descripción**: Crea un nuevo carnet
+- **Cuerpo de la Petición**: Objeto Carnet
+- **Respuesta**: Objeto Carnet creado
+
+#### Actualizar Estado de Carnet
+- **PUT** `/api/carnet/{carnetId}`
+- **Descripción**: Actualiza el estado de un carnet
+- **Parámetros**:
+  - `carnetId` (path, requerido): ID del carnet
+  - `newStatus` (query, requerido): Estado booleano
+- **Respuesta**: Objeto Carnet actualizado
+
+## Modelos de Datos
+
+### Usuario
+```json
+{
+  "id": "entero",
+  "userName": "string",
+  "password": "string",
+  "porter": "objeto Portero"
+}
+```
+
+### Portero
+```json
+{
+  "id": "entero",
+  "name": "string",
+  "cedula": "string",
+  "telefono": "string",
+  "employmentDate": "fecha y hora",
+  "position": "booleano",
+  "id_jefe": "objeto Portero",
+  "accesses": "array de enteros",
+  "user": "objeto Usuario",
+  "invoices": "array de objetos Factura"
+}
+```
+
+### Persona
+```json
+{
+  "id": "entero",
+  "name": "string",
+  "cedula": "string",
+  "telefono": "string",
+  "personType": "booleano",
+  "company": "objeto Empresa",
+  "invoices": "array de objetos Factura",
+  "equipments": "array de objetos EquipoRegistrado",
+  "vehicles": "array de objetos Vehículo",
+  "carnet": "objeto Carnet"
+}
+```
+
+### Empresa
+```json
+{
+  "id_company": "entero",
+  "name": "string",
+  "peopleList": "array de objetos Persona"
+}
+```
+
+### Acceso
+```json
+{
+  "idAccess": "entero",
+  "entryAccess": "fecha y hora",
+  "exitAccess": "fecha y hora",
+  "accessType": "booleano",
+  "people": "objeto Persona",
+  "accessNotes": "array de objetos NotaAcceso",
+  "porters": "array de objetos Portero"
+}
+```
+
+### Carnet
+```json
+{
+  "code": "string",
+  "status": "booleano",
+  "people": "objeto Persona",
+  "id": "entero"
+}
+```
+
+### EquipoRegistrado
+```json
+{
+  "id": "entero",
+  "serial": "string",
+  "registrationDate": "fecha y hora",
+  "description": "string",
+  "people": "objeto Persona"
+}
+```
+
+### Factura
+```json
+{
+  "idInvoice": "entero",
+  "date": "fecha y hora",
+  "status": "booleano",
+  "people": "objeto Persona"
+}
+```
 
 
