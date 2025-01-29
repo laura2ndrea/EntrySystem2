@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,9 +23,6 @@ public class UserService {
     // To save a User
     @Transactional
     public User saveUser(User user) {
-        if (user == null) {
-            throw new GlobalException("Empty object, please try again");
-        }
         return userRepository.saveUser(user);
     }
 
@@ -37,20 +35,20 @@ public class UserService {
         if (user == null) {
             throw new GlobalException("User cannot be empty");
         }
+
         user.setPorter(porter);
         porter.setUser(user);
         return userRepository.saveUser(user);
     }
 
     // To get a User by Porter
-public User getUserByPorter(Porters porter) {
-    if (porter == null) {
-        throw new GlobalException("Porter cannot be empty");
+    public User getUserByPorter(Porters porter) {
+        if (porter == null) {
+            throw new GlobalException("Porter cannot be empty");
+        }
+        return userRepository.findByPorter(porter)
+                .orElseThrow(() -> new GlobalException("User not found for the provided Porter"));
     }
-    return userRepository.findByPorter(porter)
-            .orElseThrow(() -> new GlobalException("User not found for the provided Porter"));
-}
-
 
 //    // To update User
 //    @Transactional
@@ -70,7 +68,6 @@ public User getUserByPorter(Porters porter) {
 //        userFound.setPassword(updatedUser.getPassword());
 //        return userRepository.saveUser(userFound);
 //    }
-
     // To delete a User
     @Transactional
     public void deleteUser(Porters porters) {
@@ -85,8 +82,6 @@ public User getUserByPorter(Porters porter) {
         }
     }
 
-    
-    
     // To list all Users
     public List<User> listAllUsers() {
         return userRepository.findAll();
@@ -100,8 +95,29 @@ public User getUserByPorter(Porters porter) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new GlobalException("User with ID " + id + " not found"));
     }
+
+    public boolean verificarUsername(String username, String password) {
+        Optional<User> userOptional = userRepository.findByuserName(username);
+
+        if (userOptional.isEmpty()) {
+            return false;
+        }
+
+        if (!userOptional.get().getPassword().equals(password)) {
+            return false;
+        }
+            return true;
+        }
+
+    
+
+    public Optional<User> getUserByName(String name) {
+        return userRepository.findByuserName(name);
+    }
+
+    public boolean checkUsernameExists(String username) {
+        User user = userRepository.findByuserName(username).get();
+        return user != null;
+    }
+
 }
-
-    
-    
-

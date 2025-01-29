@@ -19,4 +19,7 @@ public interface UserRepository {
     List<User> findAll();
 
     Optional<User> findById(Long id);
+
+    Optional<User> findByuserName(String name);
+
 }

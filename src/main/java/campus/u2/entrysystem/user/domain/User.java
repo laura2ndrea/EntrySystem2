@@ -24,10 +24,7 @@ public class User {
     @JoinColumn(name = "id_porters", foreignKey = @ForeignKey(name = "FK_user_porters"), nullable = true)
     private Porters porter;
 
-    
-    
     /// Constructor
-    
     public User() {
     }
 
@@ -42,8 +39,6 @@ public class User {
         this.password = password;
     }
 
-    
-    
     public Long getId() {
         return id;
     }
@@ -75,8 +70,6 @@ public class User {
     public void setPorter(Porters porter) {
         this.porter = porter;
     }
-
-   
 
     @Override
     public String toString() {
