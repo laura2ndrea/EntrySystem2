@@ -9,5 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CarnetJpaRepository extends JpaRepository<Carnet, Long>{
     
     Optional<Carnet> findByPeople(People people);
+    boolean existsByCode(String code);
     
 }

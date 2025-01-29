@@ -63,22 +63,16 @@ public class CarnetController {
         }
     }
    
-    
-
     @PostMapping("/{idpeople}/carnetupdate")
-public ResponseEntity<?> AsignarCarnet(@PathVariable Long idpeople) {
-    People peopleCarnet = peopleService.getPeopleById(idpeople);
-    if (peopleCarnet == null) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Persona no encontrada");
+    public ResponseEntity<?> AsignarCarnet(@PathVariable Long idpeople) {
+        People peopleCarnet = peopleService.getPeopleById(idpeople);
+        Carnet carnet = new Carnet();
+        carnet.setPeople(peopleCarnet);
+        peopleCarnet.setCarnet(carnet);
+        // peopleService.savePeople(peopleCarnet); // Asegúrate de guardar también a la persona actualizada
+        carnetService.saveCarnet(carnet);
+        return ResponseEntity.ok(carnet);
     }
-    Carnet carnet = new Carnet();
-    carnet.setPeople(peopleCarnet);
-    peopleCarnet.setCarnet(carnet);
-//    peopleService.savePeople(peopleCarnet); // Asegúrate de guardar también a la persona actualizada
-    carnetService.saveCarnet(carnet);
-    return ResponseEntity.ok(carnet);
-}
 
     
     
