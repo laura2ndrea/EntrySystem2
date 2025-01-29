@@ -34,19 +34,14 @@ public class MembershipController {
 
     // Obtener by Id 
     @GetMapping("/{idMembership}")
-    public ResponseEntity<Membership> findMembershipById(@PathVariable Long idMembership) {
-        Optional<Membership> membershipOpt = membershipService.findMembershipById(idMembership);
-        if (membershipOpt.isPresent()) {
-            return ResponseEntity.ok(membershipOpt.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public Membership findMembershipById(@PathVariable String idMembership) {
+        return membershipService.findMembershipById(idMembership);
     }
 
     // Delete con el id 
     // Funciona 
     @DeleteMapping("/{idMembership}")
-    public void deleteMembership(@PathVariable Long idMembership) {
+    public void deleteMembership(@PathVariable String idMembership) {
         membershipService.deleteMembership(idMembership);
     }
 
@@ -60,19 +55,16 @@ public class MembershipController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     
     @GetMapping("/duration/{duration}")
     public  List<Membership> findMembershipByDuration(@PathVariable Integer duration) {
        return membershipService.findMembershipsByDuration(duration);
     }
     
-    
     @GetMapping("/price/{price}")
     public  List<Membership> findMembershipByPrice(@PathVariable Double price) {
        return membershipService.findMembershipsByPrice(price);
     }
-
 
     @GetMapping("/priceless/{price}")
     public  List<Membership> findMembershipsByPriceLessThan(@PathVariable Double price) {

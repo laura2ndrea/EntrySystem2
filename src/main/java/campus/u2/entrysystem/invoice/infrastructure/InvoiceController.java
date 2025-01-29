@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 
@@ -41,30 +40,17 @@ public class InvoiceController {
     @PostMapping("/{idPeople}/people/{idPorters}/porters/{idMembership}/membership")
     public ResponseEntity<Invoice> createInvoice(@PathVariable Long idPeople,
             @PathVariable String idPorters,
-            @PathVariable Long idMembership,
+            @PathVariable String idMembership,
             @RequestBody Invoice invoice) {
         People people = peopleService.getPeopleById(idPeople);
         if (people == null) {
             return ResponseEntity.badRequest().build();
         }
-
         Porters porters = portersService.getPorterById(idPorters);
-        if (porters == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Optional< Membership> membershipOpt = membershipService.findMembershipById(idMembership);
-
-        Membership membership = membershipOpt.get();
-
-        if (membership == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+        Membership membership = membershipService.findMembershipById(idMembership);
         invoice.setPeople(people);
         invoice.setPorter(porters);
         invoice.setMembership(membership);
-
         Invoice savedInvoice = invoiceService.saveInvoice(invoice);
         return ResponseEntity.ok(savedInvoice);
     }
