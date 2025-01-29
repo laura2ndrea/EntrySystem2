@@ -215,31 +215,50 @@ public class PeopleService {
         }
     }
 
-    // To list all porters
+    @Transactional 
     public List<People> listAllPeople() {
         return peopleRepository.listAllPeople();
     }
 
     // To get a People by ID
-    public People getPeopleById(Long id) {
-        if (id == null) {
-            throw new GlobalException("ID cannot be empty");
+    @Transactional 
+    public People getPeopleById(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new InvalidInputException("ID cannot be empty");
         }
-        return peopleRepository.getPeopleById(id)
-                .orElseThrow(() -> new GlobalException("Id not found "));
+        Long personId;
+        try {
+            personId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("id", "Long", "Invalid ID format: " + id);
+        }
+        return peopleRepository.getPeopleById(personId)
+                .orElseThrow(() -> new NotFoundException("Person with ID " + id + " not found"));
     }
-
+    
+    @Transactional 
     public People getPeopleByCedula(String cedula) {
-        if (cedula == null) {
-            throw new GlobalException("ID cannot be empty");
+        if (cedula == null || cedula.isEmpty()) {
+            throw new InvalidInputException("Cedula cannot be empty");
         }
+
         return peopleRepository.getPeopleByCedula(cedula)
-                .orElseThrow(() -> new RuntimeException("People with ID " + cedula + " not found."));
+                .orElseThrow(() -> new NotFoundException("Person with cedula " + cedula + " not found"));
     }
 
-    public Optional<RegisteredEquipment> getRegisteredEquipmentByid(Long id) {
-        return peopleRepository.getRegisteredEquipmentById(id);
+    public Optional<RegisteredEquipment> getRegisteredEquipmentByid(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new InvalidInputException("ID cannot be empty");
+        }
 
+        Long equipmentId;
+        try {
+            equipmentId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("id", "Long", "Invalid ID format: " + id);
+        }
+
+        return peopleRepository.getRegisteredEquipmentById(equipmentId);
     }
-
+    
 }

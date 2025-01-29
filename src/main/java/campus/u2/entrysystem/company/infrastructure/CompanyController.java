@@ -42,7 +42,7 @@ public class CompanyController {
 
     // To add a employee to a company 
     @PostMapping("/{idCompany}/employee/{idEmployee}")
-    public Company addEmployeeToCompany(@PathVariable String idCompany, @PathVariable Long idEmployee) {
+    public Company addEmployeeToCompany(@PathVariable String idCompany, @PathVariable String idEmployee) {
         Company company = companyService.getCompanyById(idCompany);
         People employee = peopleService.getPeopleById(idEmployee);
         return companyService.addEmployeeToCompany(company, employee);
@@ -60,7 +60,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{idCompany}/{idpeople}")
-    public ResponseEntity<String> deletePeopleCompany(@PathVariable String idCompany, @PathVariable Long idpeople) {
+    public ResponseEntity<String> deletePeopleCompany(@PathVariable String idCompany, @PathVariable String idpeople) {
         Company company = companyService.getCompanyById(idCompany);
         People people = peopleService.getPeopleById(idpeople);
         if (!company.getPeopleList().contains(people)) {
@@ -124,7 +124,7 @@ public class CompanyController {
         People peopleToUpdate;
         try {
             Long id = Long.valueOf(identifier);
-            peopleToUpdate = peopleService.getPeopleById(id);
+            peopleToUpdate = peopleService.getPeopleById(id.toString());
         } catch (NumberFormatException e) {
             peopleToUpdate = peopleService.getPeopleByCedula(identifier);
         }

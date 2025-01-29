@@ -6,7 +6,6 @@ import campus.u2.entrysystem.people.application.PeopleService;
 import campus.u2.entrysystem.people.domain.People;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +53,7 @@ public class CarnetController {
     
     // To save a carnet for a person 
     @PostMapping("/people/{idPeople}")
-    public Carnet saveCarnetForPerson(@PathVariable Long idPeople, @RequestBody Carnet carnet) {
+    public Carnet saveCarnetForPerson(@PathVariable String idPeople, @RequestBody Carnet carnet) {
         People people = peopleService.getPeopleById(idPeople); 
         if (people != null) {
             return carnetService.saveCarnetForPerson(people, carnet);
@@ -64,7 +63,7 @@ public class CarnetController {
     }
    
     @PostMapping("/{idpeople}/carnetupdate")
-    public ResponseEntity<?> AsignarCarnet(@PathVariable Long idpeople) {
+    public ResponseEntity<?> AsignarCarnet(@PathVariable String idpeople) {
         People peopleCarnet = peopleService.getPeopleById(idpeople);
         Carnet carnet = new Carnet();
         carnet.setPeople(peopleCarnet);
@@ -73,19 +72,10 @@ public class CarnetController {
         carnetService.saveCarnet(carnet);
         return ResponseEntity.ok(carnet);
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
     
     // To find a carnet by id people 
     @GetMapping("/people/{idPeople}")
-    public Carnet findCarnetByPeople(@PathVariable Long idPeople) {
+    public Carnet findCarnetByPeople(@PathVariable String idPeople) {
         People people = peopleService.getPeopleById(idPeople); 
         if (people != null && people.getCarnet() != null) {
             return carnetService.getCarnetById(people.getCarnet().getId());

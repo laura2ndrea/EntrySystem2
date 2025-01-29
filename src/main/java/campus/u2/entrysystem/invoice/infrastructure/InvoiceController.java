@@ -38,7 +38,7 @@ public class InvoiceController {
     }
     
     @PostMapping("/{idPeople}/people/{idPorters}/porters/{idMembership}/membership")
-    public ResponseEntity<Invoice> createInvoice(@PathVariable Long idPeople,
+    public ResponseEntity<Invoice> createInvoice(@PathVariable String idPeople,
             @PathVariable String idPorters,
             @PathVariable String idMembership,
             @RequestBody Invoice invoice) {

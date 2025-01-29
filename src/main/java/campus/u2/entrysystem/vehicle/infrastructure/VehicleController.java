@@ -55,7 +55,7 @@ public class VehicleController {
     }
 
     @PostMapping("/{personId}")
-    public ResponseEntity<People> addVehicleToPerson(@PathVariable Long personId, @RequestBody Vehicle vehicle) {
+    public ResponseEntity<People> addVehicleToPerson(@PathVariable String personId, @RequestBody Vehicle vehicle) {
         People people = peopleService.getPeopleById(personId);
         if (people == null) {
             return ResponseEntity.notFound().build();

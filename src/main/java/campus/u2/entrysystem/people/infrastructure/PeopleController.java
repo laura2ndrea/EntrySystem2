@@ -2,9 +2,7 @@ package campus.u2.entrysystem.people.infrastructure;
 
 import campus.u2.entrysystem.people.application.PeopleService;
 import campus.u2.entrysystem.people.domain.People;
-import campus.u2.entrysystem.company.domain.Company;
 import campus.u2.entrysystem.registeredequipment.domain.RegisteredEquipment;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.carnet.application.CarnetService;
 import campus.u2.entrysystem.carnet.domain.Carnet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/people")
@@ -34,8 +31,6 @@ public class PeopleController {
         return ResponseEntity.ok(savedPeople);
     }
 
-
-
     // AGREGAR El Equipo y asignarselo a una perosna existente 
 //    
 //    			{
@@ -45,7 +40,7 @@ public class PeopleController {
 //			}
     // Body para crear el equipo  el id ya debe estar creado 
     @PostMapping("/{personId}/equipment")
-    public ResponseEntity<People> addEquipmentToPerson(@PathVariable Long personId, @RequestBody RegisteredEquipment equipment) {
+    public ResponseEntity<People> addEquipmentToPerson(@PathVariable String personId, @RequestBody RegisteredEquipment equipment) {
         People peopleToUpdate = peopleService.getPeopleById(personId);
         if (peopleToUpdate == null) {
             return ResponseEntity.notFound().build();
@@ -81,7 +76,7 @@ public class PeopleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<People> getPeopleById(@PathVariable Long id) {
+    public ResponseEntity<People> getPeopleById(@PathVariable String id) {
 
         People people = peopleService.getPeopleById(id);
         return ResponseEntity.ok(people);
@@ -111,7 +106,7 @@ public class PeopleController {
 //	} 
     @PutMapping
     public ResponseEntity<People> updatePeople(@RequestBody People people) {
-        People peopleToUpdate = peopleService.getPeopleById(people.getId());
+        People peopleToUpdate = peopleService.getPeopleById(people.getId().toString());
         if (peopleToUpdate == null) {
             return ResponseEntity.notFound().build();
         }
@@ -122,10 +117,9 @@ public class PeopleController {
         return ResponseEntity.ok(peopleToUpdate);
     }
     
-    
     // ya deb estar la perosna crea pero solo necesita el person id para asignarle 
     @PutMapping("/carnettoupdate/{idpeople}")
-    public ResponseEntity<People>  updateCarnetPeople(@PathVariable Long idpeople) {
+    public ResponseEntity<People>  updateCarnetPeople(@PathVariable String idpeople) {
         
         Carnet carnetAsignacion =  carnetService.createCarnet();
         People PeopleUpDate =  peopleService.getPeopleById(idpeople);
@@ -136,11 +130,9 @@ public class PeopleController {
         return ResponseEntity.ok(PeopleUpDate);
     }
 
-    
-    
     @PutMapping("/equipment")
     public ResponseEntity<RegisteredEquipment> updateEquipment(@RequestBody RegisteredEquipment equipment) {
-        Optional<RegisteredEquipment> equipmentToUpdateOpt = peopleService.getRegisteredEquipmentByid(equipment.getId());
+        Optional<RegisteredEquipment> equipmentToUpdateOpt = peopleService.getRegisteredEquipmentByid(equipment.getId().toString());
 
         if (!equipmentToUpdateOpt.isPresent()) {
             return ResponseEntity.notFound().build();
