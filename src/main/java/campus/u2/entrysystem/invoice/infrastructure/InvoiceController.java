@@ -44,7 +44,7 @@ public class InvoiceController {
     
     @PostMapping("/{idPeople}/people/{idPorters}/porters/{idMembership}/membership")
     public ResponseEntity<Invoice> createInvoice(@PathVariable Long idPeople,
-            @PathVariable Long idPorters,
+            @PathVariable String idPorters,
             @PathVariable Long idMembership,
             @RequestBody Invoice invoice) {
         People people = peopleService.getPeopleById(idPeople);

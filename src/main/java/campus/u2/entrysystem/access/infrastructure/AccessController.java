@@ -5,7 +5,6 @@ import campus.u2.entrysystem.access.domain.Access;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
 import campus.u2.entrysystem.porters.application.PortersService;
 import campus.u2.entrysystem.porters.domain.Porters;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,25 +60,25 @@ public class AccessController {
 
     //To add a note to an access 
     @PostMapping("/add-note/{idAccess}")
-    public Access addAccessNoteToAccess(@PathVariable Long idAccess, @RequestBody AccessNote accessNote) {
+    public Access addAccessNoteToAccess(@PathVariable String idAccess, @RequestBody AccessNote accessNote) {
         return accessService.addAccessNoteToAccess(idAccess, accessNote);
     }
     
     //To remove a note to an access 
     @DeleteMapping("/delete-note/{idAccessNote}")
-    public Access deleteAccessNoteToAccess(@PathVariable Long idAccessNote) {
+    public Access deleteAccessNoteToAccess(@PathVariable String idAccessNote) {
         return accessService.removeAccessNoteFromAccess(idAccessNote); 
     }
 
     // To add a porter to an access
     @PostMapping("/add-porter/{id}/{idPorter}")
-    public Access addPorterToAccess(@PathVariable Long id, @PathVariable Long idPorter) {
+    public Access addPorterToAccess(@PathVariable String id, @PathVariable String idPorter) {
         return accessService.addPorterToAccess(id, idPorter);
     }
 
     // To delete a porter from an access 
     @DeleteMapping("delete-porter/{id}/{idPorter}")
-    public Access removePorterFromAccess(@PathVariable Long id, @PathVariable Long idPorter) {
+    public Access removePorterFromAccess(@PathVariable String id, @PathVariable String idPorter) {
         return accessService.removePorterFromAccess(id, idPorter);
     }
 
@@ -91,16 +90,9 @@ public class AccessController {
 
     // To update a porter in an access 
     @PutMapping("/{idAccess}/porters/{idPorter}")
-    public Access updatePorterInAccess(@PathVariable String idAccess, @PathVariable Long idPorter) {
+    public Access updatePorterInAccess(@PathVariable String idAccess, @PathVariable String idPorter) {
         Access access = accessService.getAccessById(idAccess);
-        if (access == null) {
-            throw new GlobalException("Access with id " + idAccess + " not found");
-        }
         Porters porter = porterService.getPorterById(idPorter);
-        if (porter == null) {
-            // Si no se encuentra el portero, lanzar una excepción o retornar un error
-            throw new GlobalException("Porter with id " + idPorter + " not found");
-        }
         access.getPorters().add(porter); 
         return accessService.saveAccess(access);
     }

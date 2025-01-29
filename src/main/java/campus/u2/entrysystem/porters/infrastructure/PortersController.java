@@ -54,7 +54,7 @@ public class PortersController {
 
     // To get a porter by id 
     @GetMapping("/{id}")
-    public Porters getPorterById(@PathVariable Long id) {
+    public Porters getPorterById(@PathVariable String id) {
         return portersService.getPorterById(id);
     }
 
@@ -66,7 +66,7 @@ public class PortersController {
 
     // To update a porter by id 
     @PutMapping("/{id}")
-    public Porters updatePorter(@PathVariable Long id, @RequestBody Porters newPorter) {
+    public Porters updatePorter(@PathVariable String id, @RequestBody Porters newPorter) {
         Porters porter = portersService.getPorterById(id);
         if (porter != null) {
             if (newPorter.getName() != null) {

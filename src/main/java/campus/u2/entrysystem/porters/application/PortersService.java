@@ -67,13 +67,15 @@ public class PortersService {
     public List<Porters> listAllPorters() {
         return portersRepository.listAllPorters();
     }
-
+    
+    // REVISA ESTE METODO POR FAVOR ES IMPORTANTE
     // To get a porter by ID
-    public Porters getPorterById(Long id) {
+    public Porters getPorterById(String id) {
+        Long idPorter = Long.parseLong(id); 
         if (id == null) {
             throw new GlobalException("Id is not Valid please try again");
         }
-        return portersRepository.getPorterById(id)
+        return portersRepository.getPorterById(idPorter)
                 .orElseThrow(() -> new GlobalException("Id no valido"));
 
     }

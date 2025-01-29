@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping("/{idPorter}")
-    public ResponseEntity<User> saveUser(@RequestBody User user, @PathVariable Long idPorter) {
+    public ResponseEntity<User> saveUser(@RequestBody User user, @PathVariable String idPorter) {
         Porters porterToUser = portersService.getPorterById(idPorter);
         if (porterToUser == null) {
             return ResponseEntity.notFound().build();
