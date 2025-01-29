@@ -1,6 +1,5 @@
 package campus.u2.entrysystem.vehicle.infrastructure;
 
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.vehicle.application.VehicleRepository;
 import campus.u2.entrysystem.vehicle.domain.Vehicle;
 import jakarta.transaction.Transactional;

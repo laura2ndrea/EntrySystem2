@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.user.infrastructure;
 
 import campus.u2.entrysystem.Utilities.RegisterUser;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.porters.domain.Porters;
 import campus.u2.entrysystem.porters.infrastructure.PortersJpaRepository;
 import campus.u2.entrysystem.user.application.UserRepository;

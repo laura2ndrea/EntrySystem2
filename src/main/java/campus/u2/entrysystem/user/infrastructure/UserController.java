@@ -3,7 +3,6 @@ package campus.u2.entrysystem.user.infrastructure;
 import campus.u2.entrysystem.user.application.UserService;
 import campus.u2.entrysystem.user.domain.User;
 import campus.u2.entrysystem.porters.domain.Porters;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.porters.application.PortersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

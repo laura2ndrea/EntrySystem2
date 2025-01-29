@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.carnet.application;
 
 
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
 import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
@@ -64,11 +63,11 @@ public class CarnetService {
     @Transactional
     public Carnet getCarnetById(Long id) {
         if (id == null) {
-            throw new GlobalException("ID cannot be empty");
+            throw new InvalidInputException("ID cannot be empty");
         }
         try {
             return carnetRepository.getCarnetById(id)
-                    .orElseThrow(() -> new GlobalException("Not found ID"));
+                    .orElseThrow(() -> new NotFoundException("Not found ID"));
         } catch (NumberFormatException ex) {
             throw new TypeMismatchException("id", "Long", "invalid format: " + id);
         }

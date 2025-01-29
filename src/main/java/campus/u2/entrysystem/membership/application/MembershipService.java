@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.membership.application;
 
 import campus.u2.entrysystem.membership.domain.Membership;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
 import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;

@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.user.application;
 
 import campus.u2.entrysystem.Utilities.RegisterUser;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
 import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;

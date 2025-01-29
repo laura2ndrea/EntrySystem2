@@ -1,8 +1,8 @@
 package campus.u2.entrysystem.accessnotes.infrastructure;
 
+import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.access.application.AccessService;
 import campus.u2.entrysystem.accessnotes.domain.AccessNote;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.access.domain.Access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,6 @@ public class AccessNotesController {
 
     @GetMapping("/{idAccess}/")
     public ResponseEntity<List<AccessNote>> getAccessNotes(@PathVariable String idAccess) {
-
         Access access = accessService.getAccessById(idAccess);
         List<AccessNote> accessNotes = access.getAccessNotes();
         return ResponseEntity.ok(accessNotes);
@@ -39,7 +38,7 @@ public class AccessNotesController {
         AccessNote accessNote = accessNotes.stream()
                 .filter(note -> note.getId().equals(idAccessNote))
                 .findFirst()
-                .orElseThrow(() -> new GlobalException("AccessNote with id " + idAccessNote + " not found"));
+                .orElseThrow(() -> new InvalidInputException("AccessNote with id " + idAccessNote + " not found"));
         return ResponseEntity.ok(accessNote);
     }
 

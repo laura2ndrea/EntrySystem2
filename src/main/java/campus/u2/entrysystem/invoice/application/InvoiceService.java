@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.invoice.application;
 
 import campus.u2.entrysystem.invoice.domain.Invoice;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
 import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
@@ -24,7 +23,7 @@ public class InvoiceService {
     @Transactional
     public Invoice saveInvoice(Invoice invoice) {
         if (invoice == null) {
-            throw new GlobalException("Invoice cannot be null.");
+            throw new InvalidInputException("Invoice cannot be null.");
         }
         return invoiceRepository.save(invoice);
     }

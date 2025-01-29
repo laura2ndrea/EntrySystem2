@@ -3,7 +3,6 @@ package campus.u2.entrysystem.vehicle.application;
 import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.vehicle.application.VehicleRepository;
 import campus.u2.entrysystem.vehicle.domain.Vehicle;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
 import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
 import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
