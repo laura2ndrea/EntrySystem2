@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.user.infrastructure;
 
 import campus.u2.entrysystem.Utilities.LoginUser;
-import campus.u2.entrysystem.Utilities.SignInRequest;
 import campus.u2.entrysystem.Utilities.security.JWTAuthtenticationConfig;
 import campus.u2.entrysystem.porters.application.PortersService;
 import campus.u2.entrysystem.porters.domain.Porters;
