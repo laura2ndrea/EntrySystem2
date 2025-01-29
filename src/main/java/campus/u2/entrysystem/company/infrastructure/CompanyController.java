@@ -42,14 +42,14 @@ public class CompanyController {
 
     // To add a employee to a company 
     @PostMapping("/{idCompany}/employee/{idEmployee}")
-    public Company addEmployeeToCompany(@PathVariable Long idCompany, @PathVariable Long idEmployee) {
+    public Company addEmployeeToCompany(@PathVariable String idCompany, @PathVariable Long idEmployee) {
         Company company = companyService.getCompanyById(idCompany);
         People employee = peopleService.getPeopleById(idEmployee);
         return companyService.addEmployeeToCompany(company, employee);
     }
 
     @PostMapping("/{idCompany}")
-    public ResponseEntity<People> savePeopleCompany(@PathVariable Long idCompany, @RequestBody People people) {
+    public ResponseEntity<People> savePeopleCompany(@PathVariable String idCompany, @RequestBody People people) {
         Company company = companyService.getCompanyById(idCompany);
         if (company == null) {
             return ResponseEntity.notFound().build();
@@ -60,30 +60,20 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{idCompany}/{idpeople}")
-    public ResponseEntity<String> deletePeopleCompany(@PathVariable Long idCompany, @PathVariable Long idpeople) {
+    public ResponseEntity<String> deletePeopleCompany(@PathVariable String idCompany, @PathVariable Long idpeople) {
         Company company = companyService.getCompanyById(idCompany);
-        if (company == null) {
-            return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
-        }
-
         People people = peopleService.getPeopleById(idpeople);
-        if (people == null) {
-            return new ResponseEntity<>("People not found", HttpStatus.NOT_FOUND);
-        }
-
         if (!company.getPeopleList().contains(people)) {
             return new ResponseEntity<>("Person is not associated with the company", HttpStatus.BAD_REQUEST);
         }
-
         company.getPeopleList().remove(people);
         companyService.saveCompany(company);
-
         return new ResponseEntity<>("Person deleted successfully", HttpStatus.OK);
     }
 
     // To delete a company 
     @DeleteMapping("/{id}")
-    public void deleteCompany(@PathVariable Long id) {
+    public void deleteCompany(@PathVariable String id) {
         companyService.deleteCompany(id);
     }
 
@@ -95,13 +85,13 @@ public class CompanyController {
 
     // To get a company for the id 
     @GetMapping("/{id}")
-    public Company getCompanyById(@PathVariable Long id) {
+    public Company getCompanyById(@PathVariable String id) {
         return companyService.getCompanyById(id);
     }
 
     // To get all the employees by the company id 
     @GetMapping("/{id}/employees")
-    public List<People> getEmployeesByCompanyId(@PathVariable Long id) {
+    public List<People> getEmployeesByCompanyId(@PathVariable String id) {
         return companyService.getEmployeesByCompanyId(id);
     }
 
@@ -113,7 +103,7 @@ public class CompanyController {
 
     // To update the name of a company 
     @PutMapping("/{id}")
-    public Company updateCompany(@PathVariable Long id, @RequestBody Company newCompany) {
+    public Company updateCompany(@PathVariable String id, @RequestBody Company newCompany) {
         Company company = companyService.getCompanyById(id);
         if (company != null) {
             if (newCompany.getName() != null) {
@@ -126,12 +116,11 @@ public class CompanyController {
     }
 
     @PutMapping("/{idCompany}/{identifier}")
-    public ResponseEntity<People> updatePeopleFromCompany(@PathVariable Long idCompany, @PathVariable String identifier, @RequestBody People people) {
+    public ResponseEntity<People> updatePeopleFromCompany(@PathVariable String idCompany, @PathVariable String identifier, @RequestBody People people) {
         Company company = companyService.getCompanyById(idCompany);
         if (company == null) {
             return ResponseEntity.notFound().build();
         }
-
         People peopleToUpdate;
         try {
             Long id = Long.valueOf(identifier);
@@ -139,11 +128,9 @@ public class CompanyController {
         } catch (NumberFormatException e) {
             peopleToUpdate = peopleService.getPeopleByCedula(identifier);
         }
-
         if (peopleToUpdate == null || !peopleToUpdate.getCompany().getId_company().equals(idCompany)) {
             return ResponseEntity.notFound().build();
         }
-
         if (people.getName() != null) {
             peopleToUpdate.setName(people.getName());
         }
@@ -156,10 +143,7 @@ public class CompanyController {
         if (people.getTelefono() != null) {
             peopleToUpdate.setTelefono(people.getTelefono());
         }
-
-        // Asegúrate de guardar los cambios
         peopleService.savePeople(peopleToUpdate);
-
         return ResponseEntity.ok(peopleToUpdate);
     }
 }
