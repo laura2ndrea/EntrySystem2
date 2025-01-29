@@ -1,23 +1,18 @@
 package campus.u2.entrysystem.Utilities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class LoginUser {
 
-    @JsonIgnore
     private String user;
-
-    @JsonIgnore
-    private String pass;
-
     private String token;
 
+    // Default constructor
     public LoginUser() {
     }
 
-    public LoginUser(String user, String pass, String token) {
+    // Constructor without password
+    public LoginUser(String user, String token) {
         this.user = user;
-        this.pass = pass;
         this.token = token;
     }
 
@@ -27,14 +22,6 @@ public class LoginUser {
 
     public void setUser(String user) {
         this.user = user;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
-    public void setPass(String pass) {
-        this.pass = pass;
     }
 
     public String getToken() {

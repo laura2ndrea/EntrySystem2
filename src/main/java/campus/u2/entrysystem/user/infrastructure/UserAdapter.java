@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,11 +18,13 @@ public class UserAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
     private final PortersJpaRepository porterJpaRepository;  
-    
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserAdapter(UserJpaRepository userJpaRepository, PortersJpaRepository porterJpaRepository){
+    public UserAdapter(UserJpaRepository userJpaRepository, PortersJpaRepository porterJpaRepository, PasswordEncoder passwordEncoder){
         this.userJpaRepository = userJpaRepository;
-        this.porterJpaRepository= porterJpaRepository;
+        this.porterJpaRepository = porterJpaRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -46,10 +49,7 @@ public class UserAdapter implements UserRepository {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        Optional<User> existingUserOpt = userJpaRepository.findById(id);
-        if (existingUserOpt.isPresent()) {
-            userJpaRepository.delete(existingUserOpt.get());
-        }
+        userJpaRepository.deleteById(id); 
     }
 
     @Override
@@ -68,20 +68,23 @@ public class UserAdapter implements UserRepository {
     }
 
     @Override
+    @Transactional
     public User register(RegisterUser registerUser) {
         Porters porter = porterJpaRepository.findByCedula(registerUser.getCedula());
+        if (porter == null) {
+            porter = new Porters();
+            porter.setName(registerUser.getName());
+            porter.setCedula(registerUser.getCedula());
+            porter.setTelefono(registerUser.getTelefono());
+            porter.setEmploymentDate(registerUser.getEmploymentDate());
+            porterJpaRepository.save(porter);
+        }
 
-        Porters Newporter = new Porters();
-        Newporter.setName(registerUser.getName());
-        Newporter.setCedula(registerUser.getCedula());
-        Newporter.setTelefono(registerUser.getTelefono());
-        Newporter.setEmploymentDate(registerUser.getEmploymentDate());
-        
-        porterJpaRepository.save(Newporter);
-        User user = new User(registerUser.getUserName(), registerUser.getPassword());
-        user.setPorter(Newporter);
+        String encryptedPassword = passwordEncoder.encode(registerUser.getPassword());
+
+        User user = new User(registerUser.getUserName(), encryptedPassword);
+        user.setPorter(porter);
 
         return userJpaRepository.save(user);
     }
-
 }

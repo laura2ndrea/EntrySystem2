@@ -35,7 +35,7 @@ public class LoginController {
         if (imp.verificarUsername(username, password)) {
             String token = jwtAuthtenticationConfig.getJWTToken(username);
 
-            LoginUser user = new LoginUser(username, password, token);
+            LoginUser user = new LoginUser(username, token);
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");

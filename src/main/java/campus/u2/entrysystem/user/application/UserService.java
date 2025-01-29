@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PortersRepository porterRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository, PortersRepository porterRepository) {
         this.userRepository = userRepository;
-        this.porterRepository =porterRepository;
+        this.porterRepository = porterRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     // To save a User
@@ -107,23 +110,21 @@ public class UserService {
             return false;
         }
 
-        if (!userOptional.get().getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, userOptional.get().getPassword())) {
             return false;
         }
-            return true;
-        }
 
-    
+        return true;
+    }
 
     public Optional<User> getUserByName(String name) {
         return userRepository.findByuserName(name);
     }
 
     public boolean checkUsernameExists(String username) {
-        User user = userRepository.findByuserName(username).get();
-        return user != null;
+        return userRepository.findByuserName(username).isPresent();
     }
-    
+
     public User register(RegisterUser registerUser) {
         Porters porter = porterRepository.findByCedula(registerUser.getCedula());
 
@@ -133,8 +134,10 @@ public class UserService {
         Newporter.setTelefono(registerUser.getTelefono());
         Newporter.setEmploymentDate(registerUser.getEmploymentDate());
         porterRepository.savePorter(Newporter);
-        
-        User user = new User(registerUser.getUserName(), registerUser.getPassword());
+
+        String encryptedPassword = passwordEncoder.encode(registerUser.getPassword());
+
+        User user = new User(registerUser.getUserName(), encryptedPassword);
         user.setPorter(Newporter);
 
         return userRepository.saveUser(user);
