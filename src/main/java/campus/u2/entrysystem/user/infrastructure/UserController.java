@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable String id) {
 
         User user = userService.getUserById(id);
         return ResponseEntity.ok(user);
@@ -68,7 +68,7 @@ public class UserController {
 
     @PutMapping
     public ResponseEntity<User> updateUser(@RequestBody User user) {
-        User userToUpdate = userService.getUserById(user.getId());
+        User userToUpdate = userService.getUserById(user.getId().toString());
         if (userToUpdate == null) {
             return ResponseEntity.badRequest().build();
         }
