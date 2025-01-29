@@ -1,7 +1,6 @@
 package campus.u2.entrysystem.invoice.infrastructure;
 
 import campus.u2.entrysystem.invoice.domain.Invoice;
-import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.invoice.application.InvoiceService;
 import campus.u2.entrysystem.membership.application.MembershipService;
 import campus.u2.entrysystem.membership.domain.Membership;
@@ -38,9 +37,6 @@ public class InvoiceController {
     public Invoice createInvoice(@RequestBody Invoice invoice) {
         return invoiceService.saveInvoice(invoice);
     }
-
-    
-    
     
     @PostMapping("/{idPeople}/people/{idPorters}/porters/{idMembership}/membership")
     public ResponseEntity<Invoice> createInvoice(@PathVariable Long idPeople,
@@ -72,21 +68,11 @@ public class InvoiceController {
         Invoice savedInvoice = invoiceService.saveInvoice(invoice);
         return ResponseEntity.ok(savedInvoice);
     }
-
-    
-    
-    
-    
     
     @GetMapping("/{id}")
-    public Invoice getInvoiceById(@PathVariable Long id) {
+    public Invoice getInvoiceById(@PathVariable String id) {
         return invoiceService.findInvoiceById(id);
     }
-    
-    
-    
-    
-    
     
 //http://localhost:8080/api/invoices/daterange?startDate=2025-01-01&endDate=2025-01-5 Ojo asi va este link 
 
@@ -104,7 +90,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteInvoice(@PathVariable String id) {
         invoiceService.deleteInvoice(id);
         return ResponseEntity.noContent().build();
     }
