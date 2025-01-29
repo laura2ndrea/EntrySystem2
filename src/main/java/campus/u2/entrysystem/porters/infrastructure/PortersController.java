@@ -36,13 +36,13 @@ public class PortersController {
 
     // To add a boss to a porter 
     @PutMapping("/{idPorter}/boss/{idBoss}")
-    public Porters addBossToPorter(@PathVariable Long idPorter, @PathVariable Long idBoss) {
+    public Porters addBossToPorter(@PathVariable String idPorter, @PathVariable String idBoss) {
         return portersService.addBossToPorter(idPorter, idBoss);
     }
 
     // To delete a porter
     @DeleteMapping("/{id}")
-    public void deletePorter(@PathVariable Long id) {
+    public void deletePorter(@PathVariable String id) {
         portersService.deletePorter(id);
     }
 
