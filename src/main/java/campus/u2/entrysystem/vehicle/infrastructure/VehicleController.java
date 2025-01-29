@@ -33,13 +33,13 @@ public class VehicleController {
 //funciona
 
     @GetMapping("/{idVehicle}")
-    public Optional<Vehicle> findbyId(@PathVariable Long idVehicle) {
-        return vehicleService.findbyId(idVehicle);
+    public Vehicle findyId(@PathVariable String idVehicle) {
+        return vehicleService.findById(idVehicle);
     }
 //funciona
 
     @GetMapping("/plate/{plate}")
-    public Optional<Vehicle> findByPlate(@PathVariable String plate) {
+    public Vehicle findByPlate(@PathVariable String plate) {
         return vehicleService.findVehicleByPlate(plate);
     }
 
@@ -50,7 +50,7 @@ public class VehicleController {
 // funciona
 
     @DeleteMapping("/{idVehicle}")
-    public void deleteVehicle(@PathVariable Long idVehicle) {
+    public void deleteVehicle(@PathVariable String idVehicle) {
         vehicleService.deleteVehicle(idVehicle);
     }
 
@@ -68,21 +68,15 @@ public class VehicleController {
     }
 
     @PutMapping("/{idVehicle}")
-    public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long idVehicle, @RequestBody Vehicle vehicle) {
-        Optional<Vehicle> existingVehicleOpt = vehicleService.findbyId(idVehicle);
-        if (existingVehicleOpt.isPresent()) {
-            Vehicle existingVehicle = existingVehicleOpt.get();
+    public ResponseEntity<Vehicle> updatesVehicle(@PathVariable String idVehicle, @RequestBody Vehicle vehicle) {
+        Vehicle existingVehicle = vehicleService.findById(idVehicle);
 
-            if (vehicle.getPlate() != null) {
-                existingVehicle.setPlate(vehicle.getPlate());
-            }
-            existingVehicle.setVehicleType(vehicle.getVehicleType());
-
-            Vehicle updatedVehicle = vehicleService.saveVehicle(existingVehicle);
-            return ResponseEntity.ok(updatedVehicle);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (vehicle.getPlate() != null && !vehicle.getPlate().isBlank()) {
+            existingVehicle.setPlate(vehicle.getPlate());
         }
+        existingVehicle.setVehicleType(vehicle.getVehicleType());
+        Vehicle updatedVehicle = vehicleService.saveVehicle(existingVehicle);
+        return ResponseEntity.ok(updatedVehicle);
     }
 
 }

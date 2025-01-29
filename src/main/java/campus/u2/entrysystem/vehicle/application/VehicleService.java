@@ -4,6 +4,10 @@ import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.vehicle.application.VehicleRepository;
 import campus.u2.entrysystem.vehicle.domain.Vehicle;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
+import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
+import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
+import campus.u2.entrysystem.Utilities.exceptions.UniqueViolationException;
 import campus.u2.entrysystem.people.application.PeopleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -19,6 +23,7 @@ public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final PeopleRepository peopleRepository;
+    
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -31,7 +36,7 @@ public class VehicleService {
     @Transactional
     public Vehicle saveVehicle(Vehicle vehicle) {
         if (vehicle == null) {
-            throw new GlobalException("Vehicle cannot be null");
+            throw new InvalidInputException("Vehicle cannot be null");
         }
         return vehicleRepository.save(vehicle);
     }
@@ -39,11 +44,22 @@ public class VehicleService {
     @Transactional
     public Vehicle savePeopleVehicle(People people, Vehicle vehicle) {
         if (people == null) {
-            throw new GlobalException("People cannot be null");
+            throw new InvalidInputException("People cannot be null");
         }
         if (vehicle == null) {
-            throw new GlobalException("Vehicle cannot be null");
+            throw new InvalidInputException("Vehicle cannot be null");
         }
+
+        Optional<People> existingPerson = peopleRepository.getPeopleById(people.getId());
+        if (existingPerson.isEmpty()) {
+            throw new NotFoundException("Person with ID " + people.getId() + " not found");
+        }
+
+        Optional<Vehicle> existingVehicle = vehicleRepository.findByPlate(vehicle.getPlate());
+        if (existingVehicle.isPresent()) {
+            throw new UniqueViolationException("A vehicle with plate " + vehicle.getPlate() + " already exists");
+        }
+
         vehicle.setPeople(people);
         people.addVehicle(vehicle);
         return vehicleRepository.save(vehicle);
@@ -63,52 +79,57 @@ public class VehicleService {
 //        }
 //
 //    }
-@Transactional
-    public void deleteVehicle(Long id) {
+   @Transactional
+    public void deleteVehicle(String idVehicle) {
+        if (idVehicle == null || idVehicle.isBlank()) {
+            throw new InvalidInputException("Vehicle ID cannot be null or empty.");
+        }
+        try {
+            Long id = Long.parseLong(idVehicle);
+            Vehicle vehicle = vehicleRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Vehicle with ID " + id + " not found"));
 
-        
-// Obtén el vehículo que quieres eliminar
-        Optional<Vehicle> vehicleOptional = vehicleRepository.findById(id);
-            Vehicle vehicle = vehicleOptional.get();
-            Optional<People> peopleOpt = peopleRepository.getPeopleById(vehicle.getPeople().getId()); 
-            People people = peopleOpt.get(); 
+            People people = peopleRepository.getPeopleById(vehicle.getPeople().getId())
+                    .orElseThrow(() -> new NotFoundException("Owner of vehicle with ID " + id + " not found"));
+
             people.getVehicles().remove(vehicle);
             vehicle.setPeople(null);
-            
-//            // Quita la referencia a 'people' si es necesario
-//            vehicle.getPeople()
-//                vehicle.setPeople(null);  // Esto quita la referencia
-//        
-//
-//            // Asegúrate de hacer flush
-//            entityManager.flush(); // Sincroniza el contexto de persistencia antes de eliminar
 
-            // Luego, elimina el vehículo
+            entityManager.flush();
             vehicleRepository.deleteById(id);
+        } catch (NumberFormatException ex) {
+            throw new TypeMismatchException("idVehicle", "Long", "Invalid format: " + idVehicle);
+        }
     }
     
     
-
-
-
     @Transactional
     public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
     }
 
     
-    
     @Transactional
-    public Optional<Vehicle> findVehicleByPlate(String plate) {
+    public Vehicle findVehicleByPlate(String plate) {
         if (plate == null || plate.isEmpty()) {
-            throw new GlobalException("Plate cannot be null or empty");
+            throw new InvalidInputException("Plate cannot be null or empty");
         }
-        return vehicleRepository.findByPlate(plate);
+        return vehicleRepository.findByPlate(plate)
+                .orElseThrow(() -> new NotFoundException("Vehicle with plate " + plate + " not found"));
     }
     
     
-     @Transactional
-    public Optional<Vehicle> findbyId(Long id) {
-        return vehicleRepository.findById(id);
+    @Transactional
+    public Vehicle findById(String id) {
+        if (id == null || id.isBlank()) {
+            throw new InvalidInputException("Vehicle ID cannot be null or empty.");
+        }
+        try {
+            Long idVehicle = Long.parseLong(id);
+            return vehicleRepository.findById(idVehicle)
+                    .orElseThrow(() -> new NotFoundException("Vehicle with ID " + idVehicle + " not found"));
+        } catch (NumberFormatException ex) {
+            throw new TypeMismatchException("id", "Long", "Invalid format: " + id);
+        }
     }
 }
