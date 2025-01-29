@@ -117,7 +117,7 @@ public class AccessService {
                     .orElseThrow(() -> new NotFoundException("Access with ID " + accessId + " not found"));
             accessNote.setAccess(access);
             access.addAccessNotes(accessNote);
-            noteRepository.saveAccessNote(accessNote);
+            //noteRepository.saveAccessNote(accessNote);
             return accessRepository.saveAccess(access);
         } catch (NumberFormatException ex) {
             throw new TypeMismatchException("id", "Long", "invalid format: " + idAccess);
@@ -185,7 +185,7 @@ public class AccessService {
             access.getPorters().add(porter);
             porter.getAccesses().add(access);
             accessRepository.saveAccess(access);
-            portersRepository.savePorter(porter); 
+            //portersRepository.savePorter(porter); 
             return access;
         } catch (NumberFormatException ex) {
             throw new TypeMismatchException("id (access or porter)", "Long", "invalid format");
@@ -208,7 +208,7 @@ public class AccessService {
             access.getPorters().remove(porter);
             porter.getAccesses().remove(access);
             accessRepository.saveAccess(access);
-            portersRepository.savePorter(porter);
+            //portersRepository.savePorter(porter);
             return access;
         } catch (NumberFormatException ex) {
             throw new TypeMismatchException("id (access or porter)", "Long", "invalid format");
