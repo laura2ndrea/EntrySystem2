@@ -60,15 +60,15 @@ public class PeopleController {
     }
 
     @DeleteMapping("/{personId}/removeEquipment/{equipmentId}")
-    public ResponseEntity<People> removeEquipmentFromPerson(@PathVariable Long personId,
-            @PathVariable Long equipmentId) {
+    public ResponseEntity<People> removeEquipmentFromPerson(@PathVariable String personId,
+            @PathVariable String equipmentId) {
 
         People updatedPeople = peopleService.removeEquipmentFromPerson(personId, equipmentId);
         return ResponseEntity.ok(updatedPeople);
     }
 
     @GetMapping("/{peopleId}/equipment")
-    public ResponseEntity<List<RegisteredEquipment>> findEquipmentByPeopleId(@PathVariable Long peopleId) {
+    public ResponseEntity<List<RegisteredEquipment>> findEquipmentByPeopleId(@PathVariable String peopleId) {
         List<RegisteredEquipment> equipmentList = peopleService.findEquipmentByPeopleId(peopleId);
         return ResponseEntity.ok(equipmentList);
 

@@ -3,6 +3,9 @@ package campus.u2.entrysystem.people.application;
 import campus.u2.entrysystem.company.domain.Company;
 import campus.u2.entrysystem.people.domain.People;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.Utilities.exceptions.InvalidInputException;
+import campus.u2.entrysystem.Utilities.exceptions.NotFoundException;
+import campus.u2.entrysystem.Utilities.exceptions.TypeMismatchException;
 import campus.u2.entrysystem.carnet.application.CarnetRepository;
 import campus.u2.entrysystem.carnet.domain.Carnet;
 import campus.u2.entrysystem.company.application.CompanyRepository;
@@ -28,32 +31,33 @@ public class PeopleService {
         this.companyrepository = companyrepository;
     }
 
-// To Save People 
+    // To Save People 
+    @Transactional
     public People savePeople(People people) {
         if (people == null) {
-            throw new GlobalException("Empty object, please try again ");
+            throw new InvalidInputException("People object cannot be null");
         }
         return peopleRepository.savePeople(people);
     }
-
+    
+    @Transactional
     public RegisteredEquipment saveRegisteredEquipment(RegisteredEquipment registeredEquipment) {
         if (registeredEquipment == null) {
-            throw new GlobalException("Error de Registro de Equipp");
+            throw new InvalidInputException("RegisteredEquipment object cannot be null");
         }
         return peopleRepository.saveRegisteredEquipment(registeredEquipment);
-
     }
-
+    
+    @Transactional
     public People savePeople(String name, String cedula, String telefono, Boolean personType, Company company) {
-
         if (name == null || name.isEmpty()) {
-            throw new GlobalException("Name cannot be empty");
+            throw new InvalidInputException("Name cannot be empty");
         }
         if (cedula == null || cedula.isEmpty()) {
-            throw new GlobalException("Cedula cannot be empty");
+            throw new InvalidInputException("Cedula cannot be empty");
         }
         if (company == null) {
-            throw new GlobalException("Company cannot be empty");
+            throw new InvalidInputException("Company cannot be null");
         }
         People people = new People(personType, company, name, cedula, telefono);
         if (Boolean.TRUE.equals(personType)) {
@@ -62,19 +66,16 @@ public class PeopleService {
             people.setCarnet(carnet);
         }
         return peopleRepository.savePeople(people);
-
     }
-
-    public People savePeopleEquipment(People people, List<RegisteredEquipment> equipments
-    ) {
+    
+    @Transactional
+    public People savePeopleEquipment(People people, List<RegisteredEquipment> equipments) {
         if (people == null) {
-            throw new GlobalException("Person cannot be empty ");
+            throw new InvalidInputException("People object cannot be null");
         }
-
         if (equipments == null || equipments.isEmpty()) {
-            throw new GlobalException("Equipment list cannot be empty");
+            throw new InvalidInputException("Equipment list cannot be empty");
         }
-
         for (RegisteredEquipment equipment : equipments) {
             RegisteredEquipment eq = new RegisteredEquipment();
             eq.setSerial(equipment.getSerial());
@@ -86,51 +87,76 @@ public class PeopleService {
         return peopleRepository.savePeople(people);
     }
 
-    public People addEquipmentToPerson(Long personId, RegisteredEquipment equipment) {
-
-        if (personId == null) {
-            throw new GlobalException("Id cannot be empty");
+    @Transactional 
+    public People addEquipmentToPerson(String personId, RegisteredEquipment equipment) {
+        if (personId == null || personId.isEmpty()) {
+            throw new InvalidInputException("Id cannot be empty");
+        }
+        try {
+            Long personIdLong = Long.parseLong(personId);  
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("personId", "Long", "Invalid ID format: " + personId);
         }
         if (equipment == null) {
-            throw new GlobalException("Equipment cannot be empty");
+            throw new InvalidInputException("Equipment cannot be empty");
         }
-        Optional<People> peopleOpt = peopleRepository.getPeopleById(personId);
+        Long personIdLong = Long.parseLong(personId);  
+        Optional<People> peopleOpt = peopleRepository.getPeopleById(personIdLong);
         if (peopleOpt.isPresent()) {
             peopleOpt.get().addEquipments(equipment);
             return peopleRepository.savePeople(peopleOpt.get());
         }
-        throw new GlobalException("Person with ID " + personId + " not found");
+        throw new NotFoundException("Person with ID " + personId + " not found");
     }
 
     @Transactional
-    public People removeEquipmentFromPerson(Long personId, Long equipmentId) {
-        if (personId == null) {
-            throw new GlobalException("Id cannot be empty");
+    public People removeEquipmentFromPerson(String personId, String equipmentId) {
+        if (personId == null || personId.isEmpty()) {
+            throw new InvalidInputException("Person ID cannot be empty");
         }
-        if (equipmentId == null) {
-            throw new GlobalException("Equipment cannot be empty");
+        if (equipmentId == null || equipmentId.isEmpty()) {
+            throw new InvalidInputException("Equipment ID cannot be empty");
         }
-
-        Optional<People> personOpt = peopleRepository.getPeopleById(personId);
-        if (personOpt.isPresent()) {
-            People person = personOpt.get();
-            RegisteredEquipment equipmentToRemove = person.getEquipments().stream()
-                    .filter(equipment -> equipment.getId().equals(equipmentId))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Equipment with ID " + equipmentId + " not found."));
-            person.removeEquiments(equipmentToRemove);
-            return peopleRepository.savePeople(person);
-        } else {
-            throw new RuntimeException("Person with ID " + personId + " not found.");
+        Long personIdLong;
+        try {
+            personIdLong = Long.parseLong(personId);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("personId", "Long", "Invalid Person ID format: " + personId);
         }
+        Long equipmentIdLong;
+        try {
+            equipmentIdLong = Long.parseLong(equipmentId);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("equipmentId", "Long", "Invalid Equipment ID format: " + equipmentId);
+        }
+        Optional<People> personOpt = peopleRepository.getPeopleById(personIdLong);
+        if (!personOpt.isPresent()) {
+            throw new EntityNotFoundException("Person with ID " + personId + " not found");
+        }
+        People person = personOpt.get();
+        RegisteredEquipment equipmentToRemove = person.getEquipments().stream()
+                .filter(equipment -> equipment.getId().equals(equipmentIdLong))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Equipment with ID " + equipmentId + " not found"));
+        person.removeEquiments(equipmentToRemove);
+        return peopleRepository.savePeople(person);
     }
 
-    public List<RegisteredEquipment> findEquipmentByPeopleId(Long peopleId) {
-
-        if (peopleId == null) {
-            throw new GlobalException("The entered ID is incorrect, please try again");
+    public List<RegisteredEquipment> findEquipmentByPeopleId(String peopleId) {
+        if (peopleId == null || peopleId.isEmpty()) {
+            throw new InvalidInputException("Person ID cannot be empty");
         }
-        return peopleRepository.findEquipmentByPeopleId(peopleId);
+        Long peopleIdLong;
+        try {
+            peopleIdLong = Long.parseLong(peopleId);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("peopleId", "Long", "Invalid Person ID format: " + peopleId);
+        }
+        List<RegisteredEquipment> equipmentList = peopleRepository.findEquipmentByPeopleId(peopleIdLong);
+        if (equipmentList == null || equipmentList.isEmpty()) {
+            throw new EntityNotFoundException("No equipment found for person with ID " + peopleId);
+        }
+        return equipmentList;
     }
 
     //este metodo se hace desde el controlador 
@@ -154,35 +180,38 @@ public class PeopleService {
     // To delete a  People
     @Transactional
     public void deletePeople(String cedula) {
-
-        if (cedula == null) {
-            throw new GlobalException("Incorrect cedula, please try again");
-
+        if (cedula == null || cedula.isEmpty()) {
+            throw new InvalidInputException("Incorrect cedula, please try again");
         }
-
         Optional<People> existingPeopleOpt = peopleRepository.getPeopleByCedula(cedula);
         if (existingPeopleOpt.isPresent()) {
             peopleRepository.deletePeople(existingPeopleOpt.get().getId());
         } else {
-            throw new GlobalException("Unexpected error, please try again");
+            throw new EntityNotFoundException("Person with cedula " + cedula + " not found");
         }
-
     }
 
     @Transactional
-    public void deletePeople(Long id) {
-        Optional<People> optionalPeople = peopleRepository.getPeopleById(id);
+    public void deletePeopleId(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new InvalidInputException("ID cannot be empty");
+        }
+        Long personId;
+        try {
+            personId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            throw new TypeMismatchException("id", "Long", "Invalid ID format: " + id);
+        }
+        Optional<People> optionalPeople = peopleRepository.getPeopleById(personId);
         if (optionalPeople.isPresent()) {
             People people = optionalPeople.get();
             Company company = people.getCompany();
-
             company.getPeopleList().remove(people);
             people.setCompany(null);
             peopleRepository.deletePeople(people.getId());
-
             companyrepository.saveCompany(company);
         } else {
-            throw new EntityNotFoundException("Person not found");
+            throw new NotFoundException("Person with ID " + personId + " not found");
         }
     }
 
