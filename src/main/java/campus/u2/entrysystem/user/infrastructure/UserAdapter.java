@@ -1,7 +1,9 @@
 package campus.u2.entrysystem.user.infrastructure;
 
+import campus.u2.entrysystem.Utilities.RegisterUser;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
 import campus.u2.entrysystem.porters.domain.Porters;
+import campus.u2.entrysystem.porters.infrastructure.PortersJpaRepository;
 import campus.u2.entrysystem.user.application.UserRepository;
 import campus.u2.entrysystem.user.domain.User;
 import jakarta.transaction.Transactional;
@@ -14,10 +16,12 @@ import org.springframework.stereotype.Component;
 public class UserAdapter implements UserRepository {
 
     private final UserJpaRepository userJpaRepository;
-
+    private final PortersJpaRepository porterJpaRepository;  
+    
     @Autowired
-    public UserAdapter(UserJpaRepository userJpaRepository ){
+    public UserAdapter(UserJpaRepository userJpaRepository, PortersJpaRepository porterJpaRepository){
         this.userJpaRepository = userJpaRepository;
+        this.porterJpaRepository= porterJpaRepository;
     }
 
     @Override
@@ -62,4 +66,22 @@ public class UserAdapter implements UserRepository {
     public Optional<User> findByuserName(String name) {
         return userJpaRepository.findByuserName(name);
     }
+
+    @Override
+    public User register(RegisterUser registerUser) {
+        Porters porter = porterJpaRepository.findByCedula(registerUser.getCedula());
+
+        Porters Newporter = new Porters();
+        Newporter.setName(registerUser.getName());
+        Newporter.setCedula(registerUser.getCedula());
+        Newporter.setTelefono(registerUser.getTelefono());
+        Newporter.setEmploymentDate(registerUser.getEmploymentDate());
+        
+        porterJpaRepository.save(Newporter);
+        User user = new User(registerUser.getUserName(), registerUser.getPassword());
+        user.setPorter(Newporter);
+
+        return userJpaRepository.save(user);
+    }
+
 }

@@ -142,5 +142,9 @@ public class PortersService {
         }
         return portersRepository.getPortersByPosition(position);
     }
+    
+    public Porters findByCedula(String cedula) {
+        return portersRepository.findByCedula(cedula);
+    }
 
 }

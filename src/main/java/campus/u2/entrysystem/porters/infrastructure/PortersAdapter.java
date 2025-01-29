@@ -58,4 +58,9 @@ public class PortersAdapter implements PortersRepository {
         return portersRepository.findByPosition(position);
     }
 
+    @Override
+    public Porters findByCedula(String cedula) {
+        return portersRepository.findByCedula(cedula);
+    }
+
 }

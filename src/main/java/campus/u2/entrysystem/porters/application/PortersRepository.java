@@ -15,5 +15,7 @@ public interface PortersRepository {
     Optional<Porters> getPorterById(Long id);
     
     List<Porters> getPortersByPosition(Boolean position);
+    
+    Porters findByCedula(String cedula);
 
 }

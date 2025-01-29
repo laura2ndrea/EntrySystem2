@@ -1,6 +1,8 @@
 package campus.u2.entrysystem.user.application;
 
+import campus.u2.entrysystem.Utilities.RegisterUser;
 import campus.u2.entrysystem.Utilities.exceptions.GlobalException;
+import campus.u2.entrysystem.porters.application.PortersRepository;
 import campus.u2.entrysystem.porters.domain.Porters;
 import campus.u2.entrysystem.user.domain.User;
 import jakarta.transaction.Transactional;
@@ -14,10 +16,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PortersRepository porterRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PortersRepository porterRepository) {
         this.userRepository = userRepository;
+        this.porterRepository =porterRepository;
     }
 
     // To save a User
@@ -118,6 +122,22 @@ public class UserService {
     public boolean checkUsernameExists(String username) {
         User user = userRepository.findByuserName(username).get();
         return user != null;
+    }
+    
+    public User register(RegisterUser registerUser) {
+        Porters porter = porterRepository.findByCedula(registerUser.getCedula());
+
+        Porters Newporter = new Porters();
+        Newporter.setName(registerUser.getName());
+        Newporter.setCedula(registerUser.getCedula());
+        Newporter.setTelefono(registerUser.getTelefono());
+        Newporter.setEmploymentDate(registerUser.getEmploymentDate());
+        porterRepository.savePorter(Newporter);
+        
+        User user = new User(registerUser.getUserName(), registerUser.getPassword());
+        user.setPorter(Newporter);
+
+        return userRepository.saveUser(user);
     }
 
 }

@@ -1,6 +1,5 @@
 package campus.u2.entrysystem.Utilities.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig {
+
     @Autowired
     JWTAuthorizationFilter jwtAuthorizationFilter;
 
@@ -30,16 +30,17 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, Constants.LOGIN_URL).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/cuentas").permitAll()
-                        .anyRequest().authenticated())
+                .requestMatchers(HttpMethod.POST, Constants.LOGIN_URL).permitAll()
+                .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/user").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/porters").permitAll()
+                .requestMatchers(HttpMethod.GET, "/user").permitAll()
+                .requestMatchers(HttpMethod.GET, "/porters").permitAll()
+                .anyRequest().authenticated())
                 .addFilterAfter(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -53,7 +54,7 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

@@ -4,6 +4,7 @@ import campus.u2.entrysystem.porters.domain.Porters;
 import campus.u2.entrysystem.user.domain.User;
 import java.util.List;
 import java.util.Optional;
+import campus.u2.entrysystem.Utilities.RegisterUser;
 
 public interface UserRepository {
 
@@ -21,5 +22,7 @@ public interface UserRepository {
     Optional<User> findById(Long id);
 
     Optional<User> findByuserName(String name);
+    
+    User register(RegisterUser registerUser);
 
 }

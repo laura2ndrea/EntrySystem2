@@ -1,6 +1,7 @@
 package campus.u2.entrysystem.user.infrastructure;
 
 import campus.u2.entrysystem.Utilities.LoginUser;
+import campus.u2.entrysystem.Utilities.RegisterUser;
 import campus.u2.entrysystem.Utilities.security.JWTAuthtenticationConfig;
 import campus.u2.entrysystem.porters.application.PortersService;
 import campus.u2.entrysystem.porters.domain.Porters;
@@ -41,5 +42,21 @@ public class LoginController {
 
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterUser registerUser) {
+        try {
+            if(portersService.findByCedula(registerUser.getCedula())!=null){
+                return ResponseEntity.badRequest().body("Porter already exits.");
+            }
+
+            User savedUser = imp.register(registerUser);
+
+            return ResponseEntity.ok("Usuario registrado exitosamente: " + savedUser.getUserName());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al registrar el usuario.");
+        }
+    }
    
 }
